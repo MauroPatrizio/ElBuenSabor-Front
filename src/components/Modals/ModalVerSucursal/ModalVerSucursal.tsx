@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import styles from "./ModalVerSucursal.module.css";
 import { Modal } from "react-bootstrap";
-import { ISucursal } from "../../types/Sucursal";
+import { ISucursal } from "../../../types/Sucursal";
 import { FC } from "react";
 
 interface ModalVerSucursalProps {

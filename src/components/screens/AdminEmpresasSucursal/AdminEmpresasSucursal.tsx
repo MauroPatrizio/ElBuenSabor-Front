@@ -1,13 +1,13 @@
 // AdminEmpresasSucursal.tsx
 
 import React, { useState } from "react";
-import { Button, Card, Form } from "react-bootstrap";
 import style from "./AdminEmpresasSucursal.module.css";
-import ModalSucursal from "../../ModalSucursal/ModalSucursal";
-import { SucursalList } from "../../ModalSucursal/SucursalList";
+import ModalSucursal from "../../Modals/ModalSucursal/ModalSucursal";
+import { SucursalList } from "../../Modals/ModalSucursal/SucursalList";
 import { ISucursal } from "../../../types/Sucursal";
 import ModalEmpresa from "../../Modals/ModalEmpresa/ModalEmpresa";
 import CardEmpresa from "../../ui/EmpresaCard/EmpresaCard";
+import { Button } from "react-bootstrap";
 
 interface FormData {
   nombreEmpresa: string;
@@ -23,6 +23,8 @@ const AdminEmpresasSucursal = () => {
     cuit: "",
   });
   const [datosGuardados, setDatosGuardados] = useState<FormData[]>([]);
+  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<FormData | null>(null);
+  const [modoEdicion, setModoEdicion] = useState<boolean>(false);
 
   const handleOpenPopUp = () => {
     setFormData({ nombreEmpresa: "", razonSocial: "", cuit: "" });
@@ -74,12 +76,25 @@ const AdminEmpresasSucursal = () => {
     setModoEdicion(true);
   };
 
+
+  //SUCURSALES
+  const [open, setOpen] = useState(false);
+
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
+
+	const [sucursales, setSucursales] = useState<ISucursal[]>([]);
+	const handleAddSucursal = (nuevaSucursal: ISucursal) => {
+		setSucursales((prevSucursales) => [...prevSucursales, nuevaSucursal]);
+	};
+
+
   return (
     <div>
       <div className={style.containerEmpresaSucursal}>
         <div className={style.containerEmpresa}>
           <h3>Empresa</h3>
-          <button onClick={handleOpenPopUp}>Agregar empresa</button>
+          <Button onClick={handleOpenPopUp}>Agregar empresa</Button>
           <div className={style.listEmpresas}>
             {datosGuardados.length > 0 ? (
               datosGuardados.map((dato) => (

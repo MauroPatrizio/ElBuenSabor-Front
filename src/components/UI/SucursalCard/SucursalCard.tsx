@@ -5,6 +5,7 @@ import { ISucursal } from "../../../types/Sucursal";
 
 interface SucursalCardProps {
 	sucursal: ISucursal;
+	onViewClick: () => void; 
 }
 
 const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
