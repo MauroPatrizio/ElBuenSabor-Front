@@ -1,19 +1,14 @@
+// AdminEmpresasSucursal.tsx
+
 import React, { useState } from "react";
-import {
-  Button,
-  Card,
-  Container,
-  Form,
-  Nav,
-  Navbar,
-  NavDropdown,
-} from "react-bootstrap";
-import style from "./AdminEmpresasSucursal.module.css";
+import style from "./AdminEmpresasSucursal.module.css"
+import CardEmpresa from "../../ui/EmpresaCard/EmpresaCard";
+import ModalEmpresa from "../../Modals/ModalEmpresa/ModalEmpresa";
 
 interface FormData {
-  nombreEmpresa: string
-  razonSocial: string
-  cuit: number | ""
+  nombreEmpresa: string;
+  razonSocial: string;
+  cuit: number | "";
 }
 
 const AdminEmpresasSucursal = () => {
@@ -23,33 +18,51 @@ const AdminEmpresasSucursal = () => {
     razonSocial: "",
     cuit: "",
   });
-    const [datosGuardados, setDatosGuardados] = useState<FormData[]>([]);
+  const [datosGuardados, setDatosGuardados] = useState<FormData[]>([]);
+  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<FormData | null>(null);
+  const [modoEdicion, setModoEdicion] = useState<boolean>(false);
 
   const handleOpenPopUp = () => {
+    setFormData({ nombreEmpresa: "", razonSocial: "", cuit: "" });
+    setModoEdicion(true);
+    setEmpresaSeleccionada(null);
     setMostrarPopUp(true);
-
   };
 
-  const handleClosePopUp = () => {
-    setMostrarPopUp(false);
-  };
+  const handleClosePopUp = () => setMostrarPopUp(false);
 
-  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setFormData({
       ...formData,
-      [name]: name === "cuit" ? Number(value) || "" : value, 
+      [name]: name === "cuit" ? Number(value) || "" : value,
     });
   };
 
   const manejarSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Datos cargados:", formData);
-    const nuevoObjeto:FormData = formData
-    setDatosGuardados([...datosGuardados,nuevoObjeto]);
+    if (modoEdicion && empresaSeleccionada) {
+      setDatosGuardados(datosGuardados.map((dato) => (dato === empresaSeleccionada ? formData : dato)));
+    } else {
+      setDatosGuardados([...datosGuardados, formData]);
+    }
     handleClosePopUp();
     setFormData({ nombreEmpresa: "", razonSocial: "", cuit: "" });
+    setModoEdicion(false);
+    setEmpresaSeleccionada(null);
+  };
+
+  const handleVerEmpresa = (empresa: FormData) => {
+    setEmpresaSeleccionada(empresa);
+    setMostrarPopUp(true);
+    setModoEdicion(false);
+  };
+
+  const handleEditarEmpresa = (empresa: FormData) => {
+    setEmpresaSeleccionada(empresa);
+    setFormData(empresa);
+    setMostrarPopUp(true);
+    setModoEdicion(true);
   };
 
   return (
@@ -59,20 +72,16 @@ const AdminEmpresasSucursal = () => {
           <h3>Empresa</h3>
           <button onClick={handleOpenPopUp}>Agregar empresa</button>
           <div className={style.listEmpresas}>
-            {datosGuardados.length >0 ?(
-              <>
-                {datosGuardados.map((dato)=>(
-                   <Card style={{ width: "18rem" }}>
-                   <Card.Body>
-                     <Card.Title>{dato.nombreEmpresa}</Card.Title>
-                     <Button variant="primary">Ver Empresa</Button>
-                     <Button variant="primary" onClick={handleOpenPopUp}>Editar</Button>
-                   </Card.Body>
-                 </Card>
-                ))} 
-
-            </>
-            ):(
+            {datosGuardados.length > 0 ? (
+              datosGuardados.map((dato) => (
+                <CardEmpresa
+                  key={dato.cuit}
+                  dato={dato}
+                  handleVerEmpresa={handleVerEmpresa}
+                  handleEditarEmpresa={handleEditarEmpresa}
+                />
+              ))
+            ) : (
               <div>
                 <h2>No hay empresas creadas</h2>
               </div>
@@ -83,63 +92,15 @@ const AdminEmpresasSucursal = () => {
           <h3>Sucursales</h3>
         </div>
       </div>
-
-
-
-      {/* POP UP CREAR EMPRESA */}
-      {mostrarPopUp && (
-        <div className={style.popUp__crearEmpresa}>
-          <div className={style.crearEmpresa}>
-            <h2>Crear Empresa</h2>
-            <div className={style.form__crearEmpresa}>
-            <Form onSubmit={manejarSubmit}>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlInput1"
-              >
-                <Form.Control  
-                    type="text"
-                    placeholder="Nombre de la Empresa"
-                    name="nombreEmpresa" // Agregar nombre para la conexión
-                    value={formData.nombreEmpresa} // Vincular con el estado
-                    onChange={manejarCambio}
-                    required />
-              </Form.Group>
-
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlInput1"
-              >
-                <Form.Control 
-                 type="text"
-                 placeholder="Razon Social"
-                 name="razonSocial" // Agregar nombre para la conexión
-                 value={formData.razonSocial} // Vincular con el estado
-                 onChange={manejarCambio}
-                 />
-              </Form.Group>
-
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlInput1"
-              >
-                <Form.Control 
-                 type="text"
-                 placeholder="CUIT"
-                 name="cuit" // Agregar nombre para la conexión
-                 value={formData.cuit} // Vincular con el estado
-                 onChange={manejarCambio}
-                />
-              </Form.Group>
-
-              <Button  onClick={handleClosePopUp} variant="outline-danger">CERRAR</Button>
-              <Button type="submit" variant="outline-success">CONFIRMAR</Button>
-            </Form>
-            </div>
-            
-          </div>
-        </div>
-      )}
+      <ModalEmpresa
+        mostrarPopUp={mostrarPopUp}
+        formData={formData}
+        modoEdicion={modoEdicion}
+        empresaSeleccionada={empresaSeleccionada}
+        manejarCambio={manejarCambio}
+        manejarSubmit={manejarSubmit}
+        handleClosePopUp={handleClosePopUp}
+      />
     </div>
   );
 };
