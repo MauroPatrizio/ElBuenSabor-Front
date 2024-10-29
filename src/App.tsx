@@ -1,13 +1,11 @@
-
-import AdminEmpresasSucursal from './components/screens/AdminEmpresasSucursal/AdminEmpresasSucursal'
+import AdminEmpresasSucursal from "./components/screens/AdminEmpresasSucursal/AdminEmpresasSucursal";
 
 function App() {
-
-  return (
-    <>
-    <AdminEmpresasSucursal/>
-    </>
-  )
+	return (
+		<>
+			<AdminEmpresasSucursal />
+		</>
+	);
 }
 
-export default App
+export default App;

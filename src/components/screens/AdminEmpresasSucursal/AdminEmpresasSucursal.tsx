@@ -1,9 +1,13 @@
 // AdminEmpresasSucursal.tsx
 
 import React, { useState } from "react";
-import style from "./AdminEmpresasSucursal.module.css"
-import CardEmpresa from "../../ui/EmpresaCard/EmpresaCard";
+import { Button, Card, Form } from "react-bootstrap";
+import style from "./AdminEmpresasSucursal.module.css";
+import ModalSucursal from "../../ModalSucursal/ModalSucursal";
+import { SucursalList } from "../../ModalSucursal/SucursalList";
+import { ISucursal } from "../../../types/Sucursal";
 import ModalEmpresa from "../../Modals/ModalEmpresa/ModalEmpresa";
+import CardEmpresa from "../../ui/EmpresaCard/EmpresaCard";
 
 interface FormData {
   nombreEmpresa: string;
@@ -19,8 +23,6 @@ const AdminEmpresasSucursal = () => {
     cuit: "",
   });
   const [datosGuardados, setDatosGuardados] = useState<FormData[]>([]);
-  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<FormData | null>(null);
-  const [modoEdicion, setModoEdicion] = useState<boolean>(false);
 
   const handleOpenPopUp = () => {
     setFormData({ nombreEmpresa: "", razonSocial: "", cuit: "" });
@@ -29,10 +31,13 @@ const AdminEmpresasSucursal = () => {
     setMostrarPopUp(true);
   };
 
-  const handleClosePopUp = () => setMostrarPopUp(false);
+  const handleClosePopUp = () => {
+    setMostrarPopUp(false);
+  };
 
-  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
+
     setFormData({
       ...formData,
       [name]: name === "cuit" ? Number(value) || "" : value,
@@ -42,7 +47,11 @@ const AdminEmpresasSucursal = () => {
   const manejarSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (modoEdicion && empresaSeleccionada) {
-      setDatosGuardados(datosGuardados.map((dato) => (dato === empresaSeleccionada ? formData : dato)));
+      setDatosGuardados(
+        datosGuardados.map((dato) =>
+          dato === empresaSeleccionada ? formData : dato
+        )
+      );
     } else {
       setDatosGuardados([...datosGuardados, formData]);
     }
@@ -88,8 +97,19 @@ const AdminEmpresasSucursal = () => {
             )}
           </div>
         </div>
-        <div className={style.containerSucursal}>
+        <div className={style["div-container-sucursal"]}>
           <h3>Sucursales</h3>
+          <Button onClick={handleOpen}>Crear sucursal</Button>
+          <div>
+            <ModalSucursal
+              handleOpen={open}
+              handleClose={handleClose}
+              onAddSucursal={handleAddSucursal}
+            />
+          </div>
+          <div>
+            <SucursalList sucursales={sucursales} />
+          </div>
         </div>
       </div>
       <ModalEmpresa
