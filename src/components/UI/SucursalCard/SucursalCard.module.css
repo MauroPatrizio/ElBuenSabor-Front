@@ -1,5 +1,4 @@
 .div-card {
-	cursor: pointer;
 	transition: transform 0.3s ease;
 }
 
@@ -15,10 +14,10 @@
 	display: flex;
 	flex-direction: column;
 	text-align: center;
-	pointer-events: none;
 }
 
 .buttons {
+	cursor: pointer;
 	display: flex;
 	justify-content: space-evenly;
 	margin-top: 1rem;

@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
-import ModalSucursal from "./ModalSucursal";
-import SucursalCard from "../../ui/SucursalCard/SucursalCard";
 import { ISucursal } from "../../../types/Sucursal";
+import SucursalCard from "../../UI/SucursalCard/SucursalCard";
 
 interface SucursalListProps {
 	sucursales: ISucursal[];
@@ -30,15 +29,18 @@ export const SucursalList: FC<SucursalListProps> = ({ sucursales }) => {
 			}}
 		>
 			{sucursales.length > 0 ? (
-				sucursales.map((sucursal, index) => (
-					<SucursalCard
-						key={index}
-						sucursal={sucursal}
-						onViewClick={() => {
-							handleOpenModal(sucursal);
-						}}
-					/>
-				))
+				sucursales.map(
+					(sucursal, index) => (
+						<SucursalCard
+							key={index}
+							sucursal={sucursal}
+							show={() => {
+								handleOpenModal(sucursal);
+							}}
+						/>
+					),
+					console.log(sucursales)
+				)
 			) : (
 				<h3>Aun no hay sucursales cargadas</h3>
 			)}

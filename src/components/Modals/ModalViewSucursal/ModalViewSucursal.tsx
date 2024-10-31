@@ -1,19 +1,20 @@
 import { Box, Typography } from "@mui/material";
-import styles from "./ModalVerSucursal.module.css";
-import { Modal } from "react-bootstrap";
+import styles from "./ModalViewSucursal.module.css";
+import { Button, Modal } from "react-bootstrap";
 import { ISucursal } from "../../../types/Sucursal";
 import { FC } from "react";
 
 interface ModalVerSucursalProps {
-	sucursal: ISucursal | null;
-	onClose: () => void;
+	sucursal: ISucursal;
+	handleViewOpen: boolean;
+	handleViewClose: () => void;
 }
 
-export const ModalVerSucursal: FC<ModalVerSucursalProps> = ({ sucursal, onClose }) => {
+export const ModalViewSucursal: FC<ModalVerSucursalProps> = ({ sucursal, handleViewOpen, handleViewClose }) => {
 	if (!sucursal) return null;
 	return (
-		<Modal>
-			<Modal.Header>
+		<Modal show={handleViewOpen} onHide={handleViewClose} aria-labelledby="modal-title" className={styles["Modal"]} size="xl">
+			<Modal.Header closeButton className={styles["modal-header"]}>
 				<Modal.Title>{sucursal.nombre}</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
@@ -34,6 +35,11 @@ export const ModalVerSucursal: FC<ModalVerSucursalProps> = ({ sucursal, onClose 
 					<Typography>imagen: {sucursal.imagen}</Typography>
 				</Box>
 			</Modal.Body>
+			<Modal.Footer>
+				<Button variant="secondary" onClick={handleViewClose}>
+					Close
+				</Button>
+			</Modal.Footer>
 		</Modal>
 	);
 };

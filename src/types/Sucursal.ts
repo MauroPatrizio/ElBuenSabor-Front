@@ -1,4 +1,5 @@
 export interface ISucursal {
+	id: number;
 	nombre: string;
 	apertura: string;
 	cierre: string;

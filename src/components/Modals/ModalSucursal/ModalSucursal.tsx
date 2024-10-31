@@ -1,5 +1,5 @@
 import { Box, Checkbox, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import styles from "./ModalSucursal.module.css";
 import { ISucursal } from "../../../types/Sucursal";
@@ -8,11 +8,15 @@ interface ModalSucursalProps {
 	handleOpen: boolean;
 	handleClose: () => void;
 	onAddSucursal: (sucursal: ISucursal) => void;
+	isEdit: boolean;
+	dataSucursal?: ISucursal;
 }
 
-const ModalSucursal: FC<ModalSucursalProps> = ({ handleOpen, handleClose, onAddSucursal }) => {
+const ModalSucursal: FC<ModalSucursalProps> = ({ handleOpen, handleClose, onAddSucursal, isEdit, dataSucursal }) => {
 	const [habilitado, setHabilitado] = useState<boolean>(false);
+
 	const [formData, setFormData] = useState<ISucursal>({
+		id: NaN,
 		nombre: "",
 		apertura: "",
 		cierre: "",
@@ -60,39 +64,52 @@ const ModalSucursal: FC<ModalSucursalProps> = ({ handleOpen, handleClose, onAddS
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const requiredErrors = {
-			nombre: formData.nombre === "",
-			apertura: formData.apertura === "",
-			cierre: formData.cierre === "",
-			imagen: formData.imagen === "",
-		};
+		if (!isEdit) {
+			const requiredErrors = {
+				nombre: formData.nombre === "",
+				apertura: formData.apertura === "",
+				cierre: formData.cierre === "",
+				imagen: formData.imagen === "",
+			};
 
-		setErrors(requiredErrors);
+			setErrors(requiredErrors);
 
-		if (Object.values(requiredErrors).some((error) => error)) {
-			return;
+			if (Object.values(requiredErrors).some((error) => error)) {
+				return;
+			}
 		}
+
 		onAddSucursal(formData);
 		handleClose();
-		setFormData({
-			nombre: "",
-			apertura: "",
-			cierre: "",
-			habilitado: false,
-			pais: "",
-			provincia: "",
-			localidad: "",
-			latitud: "",
-			longitud: "",
-			calle: "",
-			numero: "",
-			cp: "",
-			piso: "",
-			departamento: "",
-			imagen: "",
-		});
-		setHabilitado(false);
+		if (!isEdit) {
+			setFormData({
+				id: NaN,
+				nombre: "",
+				apertura: "",
+				cierre: "",
+				habilitado: false,
+				pais: "",
+				provincia: "",
+				localidad: "",
+				latitud: "",
+				longitud: "",
+				calle: "",
+				numero: "",
+				cp: "",
+				piso: "",
+				departamento: "",
+				imagen: "",
+			});
+			setHabilitado(false);
+		}
 	};
+
+	useEffect(() => {
+		if (isEdit && dataSucursal) {
+			setFormData(dataSucursal);
+			setHabilitado(dataSucursal.habilitado);
+		}
+	}, [isEdit, dataSucursal]);
 
 	return (
 		<Modal show={handleOpen} onHide={handleClose} aria-labelledby="modal-title" className={styles["Modal-main"]} size="xl">
