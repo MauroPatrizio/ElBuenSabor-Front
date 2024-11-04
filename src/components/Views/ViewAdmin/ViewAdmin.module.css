@@ -1,37 +1,80 @@
-.contentHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 8px;
-    font-family: "Unbounded", sans-serif;
-  }
-  
-  .contentHeader h2 {
-    margin-left: 3rem;
-    font-size: 2rem;
-  }
-  
-  .contentHeader h2:hover {
-    cursor: pointer;
-  }
-  
-  .contentSucursal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #acc4ff;
-    border: 1px solid #b2b0b0;
-    border-radius: 1.3rem;
-    padding: 0rem 1rem;
-    cursor: default;
-  }
-  
-  .contentSucursal h2 {
-    font-size: 2rem;
+body {
     margin: 0;
-  }
-  
-  .contentSucursal span {
-    font-size: 2rem;
-    margin-right: 1rem;
-  }
+    font-family: Arial, sans-serif;
+}
+
+.admin-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header {
+    background-color: #d9742c;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.admin-menu {
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    padding: 10px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu-button:hover {
+    background-color: #eaeaea;
+}
+
+.content-area {
+    flex: 1;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.add-button {
+    display: inline-block;
+    margin: 10px 0;
+    padding: 5px 10px;
+    border: 1px solid #d9742c;
+    color: #d9742c;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background-color: #f3d4b4;
+}
