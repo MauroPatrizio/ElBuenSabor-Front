@@ -3,26 +3,53 @@ import styles from "./ViewAdmin.module.css";
 import { RootState } from "../../../redux/store/store";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import React, { useState } from 'react';
 
-export const HeaderAdmin = () => {
-  const navegate = useNavigate();
+const ViewAdmin: React.FC = () => {
+  // Estado que guarda la pestaña activa
+  const [activeTab, setActiveTab] = useState<'Categorias' | 'Productos' | 'Alergenos'>('Categorias');
+
+  // Función para cambiar la pestaña activa
+  const handleTabChange = (tab: 'Categorias' | 'Productos' | 'Alergenos') => {
+    setActiveTab(tab);
+  };
 
   return (
-    <div className={styles.mainDiv}>
-      <div className={styles.contentHeader}>
-        <h2
-          onClick={() => {
-            navegate(-1);
-          }}
+    <div className="admin-container">
+      <header className="header">
+        <button className="back-button">←</button>
+        <h1>BENDITO RUFIÁN - LA BARRACA</h1>
+      </header>
+      <div className="admin-menu">
+        {/* Botones para cambiar de pestaña */}
+        <button
+          onClick={() => handleTabChange('Categorias')}
+          className={`menu-button ${activeTab === 'Categorias' ? 'active' : ''}`}
         >
-          {"Empresa"}
-        </h2>
-        <div className={styles.contentSucursal}>
-          <span className="point">•</span>
-          <h2>{"Sucursal"}</h2>
-        </div>
+          Categorias
+        </button>
+        <button
+          onClick={() => handleTabChange('Productos')}
+          className={`menu-button ${activeTab === 'Productos' ? 'active' : ''}`}
+        >
+          Productos
+        </button>
+        <button
+          onClick={() => handleTabChange('Alergenos')}
+          className={`menu-button ${activeTab === 'Alergenos' ? 'active' : ''}`}
+        >
+          Alergenos
+        </button>
       </div>
 
+      {/* Contenido de la pestaña activa */}
+      <div className="content-area">
+        {activeTab === 'Categorias' && <p>Contenido de Categorías</p>}
+        {activeTab === 'Productos' && <p>Contenido de Productos</p>}
+        {activeTab === 'Alergenos' && <p>Contenido de Alérgenos</p>}
+      </div>
     </div>
   );
 };
+
+export default ViewAdmin;
