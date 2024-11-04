@@ -1,0 +1,37 @@
+.contentHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px;
+    font-family: "Unbounded", sans-serif;
+  }
+  
+  .contentHeader h2 {
+    margin-left: 3rem;
+    font-size: 2rem;
+  }
+  
+  .contentHeader h2:hover {
+    cursor: pointer;
+  }
+  
+  .contentSucursal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #acc4ff;
+    border: 1px solid #b2b0b0;
+    border-radius: 1.3rem;
+    padding: 0rem 1rem;
+    cursor: default;
+  }
+  
+  .contentSucursal h2 {
+    font-size: 2rem;
+    margin: 0;
+  }
+  
+  .contentSucursal span {
+    font-size: 2rem;
+    margin-right: 1rem;
+  }
