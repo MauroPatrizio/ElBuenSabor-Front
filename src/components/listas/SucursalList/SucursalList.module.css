@@ -1,0 +1,14 @@
+.div-lista {
+	max-height: 48rem;
+	overflow-y: auto;
+	padding: 10px;
+}
+
+.div-lista::-webkit-scrollbar {
+	display: none;
+}
+
+/* display: "grid",
+gridTemplateColumns: "repeat(3, minmax(250px, 1fr))",
+gap: "1.3rem",
+justifyItems: "stretch", */

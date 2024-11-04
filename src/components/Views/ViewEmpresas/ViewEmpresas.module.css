@@ -1,0 +1,21 @@
+.div-main {
+	pointer-events: none;
+}
+
+.containerEmpresaSucursal {
+	display: flex;
+	width: 100%;
+	margin: 1rem;
+}
+
+.containerEmpresa {
+	width: 30vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+.div-lista-empresas {
+	background-color: #e7e6e6;
+}

@@ -1,0 +1,25 @@
+.div-main {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.div-title {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.div-lista {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(250px, 1fr));
+	max-height: 100%;
+	overflow-y: auto;
+	gap: 1.3rem;
+}
+
+.div-lista::-webkit-scrollbar {
+	display: none;
+}
