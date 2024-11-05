@@ -2,7 +2,7 @@ import { ChangeEvent, FC, useState } from "react";
 import { IUpdateSucursal } from "../../../../types/dtos/sucursal/IUpdateSucursal";
 import { ISucursal } from "../../../../types/dtos/sucursal/ISucursal";
 import { BASE_URL_SUCURSALES } from "../../../../services/sucursalService";
-import Swal from "sweetalert2";
+import Swal from "sweetalert2"
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import styles from "./ModalEditSucursal.module.css";
 
