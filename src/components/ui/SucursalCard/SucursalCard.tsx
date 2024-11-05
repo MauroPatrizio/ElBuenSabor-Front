@@ -1,9 +1,9 @@
 import { FC, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import styles from "./SucursalCard.module.css";
-import { ModalVerSucursal } from "../../modals/Sucursal/ModalVerSucursal/ModalVerSucursal";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import { ModalEditSucursal } from "../../modals/Sucursal/ModalEditSucursal/ModalEditSucursal";
+import { ModalVerSucursal } from "../../modals/Sucursal/ModalVerSucursal/ModalVerSucursal";
 
 interface SucursalCardProps {
 	sucursal: ISucursal;

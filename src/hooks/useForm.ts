@@ -4,33 +4,33 @@ interface FormValue {
 	[key: string]: string | number | boolean | object | undefined;
 }
 
-export const useForm = <T extends FormValue>(initialValues: T) => {
-	const [values, setValues] = useState<T>(initialValues);
+export const useForm = <T extends FormValue>(initialData: T) => {
+	const [data, setData] = useState<T>(initialData);
 
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { value, name } = e.target;
 
 		if (name === "cuit") {
 			const numericValue = value.replace(/^\d{11}$/, "");
 			if (numericValue.length <= 11) {
-				setValues({ ...values, [name]: numericValue });
+				setData({ ...data, [name]: numericValue });
 			}
 			return;
 		}
-		setValues({ ...values, [name]: value });
+		setData({ ...data, [name]: value });
 	};
 
 	const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
 		const { value, name } = e.target;
 
-		setValues({ ...values, [name]: value });
+		setData({ ...data, [name]: value });
 	};
 
 	const resetForm = () => {
-		setValues(initialValues);
+		setData(initialData);
 	};
 	return {
-		values,
+		data,
 		handleChange,
 		handleSelectChange,
 		resetForm,

@@ -1,7 +1,7 @@
 import { ChangeEvent, FC, useState } from "react";
 import { IUpdateSucursal } from "../../../../types/dtos/sucursal/IUpdateSucursal";
 import { ISucursal } from "../../../../types/dtos/sucursal/ISucursal";
-import { BASE_URL_SUCURSALES } from "../../../../services/sucursalService";
+import { BASE_URL_SUCURSALES } from "../../../../services/SucursalService";
 import Swal from "sweetalert2";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import styles from "./ModalEditSucursal.module.css";
@@ -86,6 +86,8 @@ export const ModalEditSucursal: FC<IModalEditSucursalProps> = ({ show, onHide, s
 			aria-labelledby="modal-title"
 			className={styles["Modal-main"]}
 			size="xl"
+			centered
+			backdrop="static"
 		>
 			<Modal.Header closeButton>
 				<Modal.Title>Editar Sucursal {sucursal.nombre}</Modal.Title>
@@ -258,23 +260,23 @@ export const ModalEditSucursal: FC<IModalEditSucursalProps> = ({ show, onHide, s
 							</Form.Group>
 						</div>
 					</Row>
-
-					<Button
-						variant="outline-warning"
-						onClick={onHide}
-					>
-						CANCELAR
-					</Button>
-					<Button
-						type="submit"
-						onClick={handleSubmit}
-						variant="outline-success"
-					>
-						Enviar
-					</Button>
 				</Form>
 			</Modal.Body>
-			<Modal.Footer></Modal.Footer>
+			<Modal.Footer>
+				<Button
+					variant="outline-warning"
+					onClick={onHide}
+				>
+					CANCELAR
+				</Button>
+				<Button
+					type="submit"
+					onClick={handleSubmit}
+					variant="outline-success"
+				>
+					Enviar
+				</Button>
+			</Modal.Footer>
 		</Modal>
 	);
 };

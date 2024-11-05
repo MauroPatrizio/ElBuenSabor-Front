@@ -36,7 +36,9 @@ const EmpresaCard: React.FC<EmpresaCardProps> = ({ dato }) => {
 				onClick={handleSelectEmpresa}
 			>
 				<Card.Header>
-					<Card.Title className="d-flex justify-content-center">{dato.nombre}</Card.Title>
+					<Card.Title className="d-flex justify-content-center text-center">
+						{dato.nombre}
+					</Card.Title>
 				</Card.Header>
 				<Card.Body className={style["card-body"]}>
 					<Card.Img
