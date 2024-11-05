@@ -1,5 +1,5 @@
+import ViewAdmin from "../../Views/ViewAdmin/ViewAdmin";
 import styles from "./Admin.module.css";
-import { ViewAdmin } from "../../Views/ViewAdmin/ViewAdmin";
 import { Outlet } from "react-router-dom";
 
 export const Admin = () => {
