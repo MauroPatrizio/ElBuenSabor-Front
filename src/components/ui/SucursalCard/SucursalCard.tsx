@@ -22,8 +22,8 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
   const handleEditClose = () => setEditOpen(false);
 
   // Función para manejar la redirección al hacer clic en el botón de administración
-  const handleAdminRedirect = () => {
-    navigate("/admin"); // Ajusta la ruta si necesitas parámetros adicionales
+  const handleAdminRedirect = (nombre: string) => {
+    navigate("/admin", { state: {branchName: nombre} }); // Ajusta la ruta si necesitas parámetros adicionales y envia el nombre de la sucursal
   };
 
   return (
@@ -43,7 +43,7 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
             {/* botón de administración */}
             <Button
               variant="outline-primary"
-              onClick={handleAdminRedirect} // Llama a la función al hacer clic
+              onClick={()=>handleAdminRedirect(sucursal.nombre)} // Llama a la función al hacer clic
             >
               <span className="material-symbols-outlined">apartment</span>
             </Button>
