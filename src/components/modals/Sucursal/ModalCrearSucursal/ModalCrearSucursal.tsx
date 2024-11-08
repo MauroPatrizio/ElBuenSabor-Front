@@ -1,109 +1,164 @@
-import { FC, useEffect, useState } from "react";
-import { SucursalService } from "../../../../services/SucursalService";
+import { ChangeEvent, FC, useEffect, useState } from "react";
+import { sucursalService } from "../../../../services/sucursalService";
 import Swal from "sweetalert2";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import styles from "./ModalCrearSucursal.module.css";
 import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
 import { ICreateSucursal } from "../../../../types/dtos/sucursal/ICreateSucursal";
-import { useForm } from "../../../../hooks/useForm";
+import { IPais } from "../../../../types/IPais";
+import { IProvincia } from "../../../../types/IProvincia";
+import { ILocalidad } from "../../../../types/ILocalidad";
+import { paisService } from "../../../../services/paisService";
+import { provinciaService } from "../../../../services/provinciaService";
+import { localidadService } from "../../../../services/localidadService";
 
 interface IModalCrearSucursalProps {
 	show: boolean;
 	onHide: () => void;
-	empresa: IEmpresa | null;
+	idEmpresa: number;
 }
 
-interface Option {
-	id: string;
-	name: string;
-}
-
-const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empresa }) => {
-	if (!empresa) {
-		return null;
-	}
-
-	const [options, setOptions] = useState<Option[]>([]);
-
-	const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
-	const fetchOptions = async (tipo: string) => {
-		try {
-			const response = await fetch(`http://190.221.207.224:8090/${tipo}`);
-			if (response.ok) {
-				const dato = await response.json();
-				setOptions(dato);
-			} else {
-				console.error("No se pudo cargar las opciones");
-			}
-		} catch (e) {
-			console.error(e);
-		}
-	};
-
-	useEffect(() => {
-		if (selectedOption) {
-			fetchOptions(selectedOption);
-		}
-	}, [selectedOption]);
-
-	const { data, handleChange, handleSelectChange, resetForm } = useForm({
+const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpresa }) => {
+	const [newSucursal, setNewSucursal] = useState<ICreateSucursal>({
 		nombre: "",
 		horarioApertura: "",
 		horarioCierre: "",
 		esCasaMatriz: false,
-		pais: "",
-		provincia: "",
-		localidad: "",
 		latitud: 0,
 		longitud: 0,
-		calle: "",
-		numeroCalle: 0,
-		cp: 0,
-		piso: 0,
-		nroDpto: 0,
+		domicilio: {
+			calle: "",
+			numero: 0,
+			cp: 0,
+			piso: 0,
+			nroDpto: 0,
+			idLocalidad: 0,
+		},
+		idEmpresa: idEmpresa,
 		logo: "",
 	});
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const { name, value, type, checked } = e.target;
+
+		setNewSucursal((prev) => {
+			if (name in prev.domicilio) {
+				return {
+					...prev,
+					domicilio: {
+						...prev.domicilio,
+						[name]: type === "number" ? parseInt(value) : value,
+					},
+				};
+			}
+			return {
+				...prev,
+				[name]:
+					type === "checkbox" ? checked : type === "number" ? parseFloat(value) : value,
+			};
+		});
+	};
+
+	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
 		try {
-			const newSucursal: ICreateSucursal = {
-				nombre: data.nombre,
-				horarioApertura: data.horarioApertura,
-				horarioCierre: data.horarioCierre,
-				esCasaMatriz: data.esCasaMatriz,
-				latitud: data.latitud,
-				longitud: data.longitud,
-				domicilio: {
-					calle: data.calle,
-					numero: data.numeroCalle,
-					piso: data.piso,
-					nroDpto: data.nroDpto,
-					idLocalidad: 0,
-					cp: data.cp,
-				},
-				idEmpresa: empresa.id,
-				logo: data.logo,
-			};
-			await SucursalService.createSucursal(newSucursal);
+			await sucursalService.createSucursal(newSucursal);
+
 			Swal.fire({
 				icon: "success",
 				title: "Sucursal Creada",
-				showConfirmButton: false,
-				timer: 2000,
+				showCancelButton: false,
+				timer: 1800,
+				didClose: () => {
+					window.location.reload();
+				},
 			});
-			resetForm();
-			onHide();
 		} catch (e) {
 			Swal.fire({
 				icon: "error",
-				title: "No se pudo crear la sucursal",
-				text: `${e}`,
-				showConfirmButton: true,
+				title: "No se pudo carga la sucursal",
+				showCloseButton: true,
 			});
 		}
+	};
+
+	const [paises, setPaises] = useState<IPais[]>([]);
+	const [provincias, setProvincias] = useState<IProvincia[]>([]);
+	const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
+
+	const [selectedPais, setSelectedPais] = useState("");
+	const [selectedProvincia, setSelectedProvincia] = useState("");
+	const [selectedLocalidad, setSelectedLocalidad] = useState("");
+
+	//Fetch de Paises
+	useEffect(() => {
+		const fetchPaises = async () => {
+			try {
+				const data = await paisService.getAllPaises();
+				setPaises(data.sort((a, b) => a.nombre.localeCompare(b.nombre)));
+			} catch (e) {
+				console.error(e);
+			}
+		};
+		fetchPaises();
+	}, []);
+
+	//Fetch de Provincias segun el pais
+	useEffect(() => {
+		if (selectedPais) {
+			const fetchProvincias = async () => {
+				try {
+					const data = await provinciaService.getAllProvincias(Number(selectedPais));
+					setProvincias(data.sort((a, b) => a.nombre.localeCompare(b.nombre)));
+					setLocalidades([]);
+				} catch (e) {
+					console.error(e);
+				}
+			};
+			fetchProvincias();
+		}
+	}, [selectedPais]);
+
+	//Fetch de localidades segun provincia
+	useEffect(() => {
+		if (selectedProvincia) {
+			const fetchLocalidades = async () => {
+				try {
+					const data = await localidadService.getAllLocalidades(
+						Number(selectedProvincia)
+					);
+					setLocalidades(data.sort((a, b) => a.nombre.localeCompare(b.nombre)));
+				} catch (e) {
+					console.error(e);
+				}
+			};
+			fetchLocalidades();
+		}
+	}, [selectedProvincia]);
+
+	const handleChangePais = (e: ChangeEvent<HTMLSelectElement>) => {
+		setSelectedPais(e.target.value);
+		setSelectedProvincia("");
+		setSelectedLocalidad("");
+	};
+
+	const handleChangeProvincia = (e: ChangeEvent<HTMLSelectElement>) => {
+		setSelectedProvincia(e.target.value);
+		setSelectedLocalidad("");
+	};
+
+	const handleChangeLocalidad = (e: ChangeEvent<HTMLSelectElement>) => {
+		const idLocalidad = parseInt(e.target.value);
+		setSelectedLocalidad(e.target.value);
+
+		setNewSucursal((prev) => ({
+			...prev,
+			domicilio: {
+				...prev.domicilio,
+				idLocalidad: idLocalidad,
+			},
+		}));
 	};
 
 	return (
@@ -129,7 +184,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 									type="text"
 									name="nombre"
 									onChange={handleChange}
-									value={data.nombre}
+									value={newSucursal.nombre}
 								/>
 							</Form.Group>
 							<Form.Group controlId="horarioApertura">
@@ -138,7 +193,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 									type="time"
 									name="horarioApertura"
 									onChange={handleChange}
-									value={data.horarioApertura}
+									value={newSucursal.horarioApertura}
 								/>
 							</Form.Group>
 							<Form.Group controlId="horarioCierre">
@@ -147,7 +202,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 									type="time"
 									name="horarioCierre"
 									onChange={handleChange}
-									value={data.horarioCierre}
+									value={newSucursal.horarioCierre}
 								/>
 							</Form.Group>
 							<Form.Group
@@ -157,7 +212,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 								<Form.Check
 									type="checkbox"
 									label="Casa Matriz"
-									checked={data.esCasaMatriz}
+									checked={newSucursal.esCasaMatriz}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -166,67 +221,69 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 						<Col md={4}>
 							<Form.Group controlId="pais">
 								<Form.Label>País</Form.Label>
-								<Form.Control
-									as="select"
+								<select
 									name="pais"
-									value={data.pais}
-									onChange={(e) => {
-										const selectedPais = e.target.value;
-										handleSelectChange(e);
-										setSelectedOption(selectedPais);
-										fetchOptions(`paises`);
-									}}
+									id="pais"
+									value={selectedPais}
+									onChange={handleChangePais}
 								>
 									<option value="">Seleccione un pais</option>
-									{options.map((option) => (
+									{paises.map((pais) => (
 										<option
-											key={option.id}
-											value={option.id}
+											key={pais.id}
+											value={pais.id}
 										>
-											{option.name}
+											{pais.nombre}
 										</option>
 									))}
-								</Form.Control>
+								</select>
 							</Form.Group>
 							<Form.Group controlId="provincia">
 								<Form.Label>Provincia</Form.Label>
-								<Form.Control
-									as="select"
+								<select
 									name="provincia"
-									value={data.provincia}
-									onChange={(e) => {
-										const selectedProvincia = e.target.value;
-										handleFormChange(e);
-										setSelectedOption(selectedProvincia);
-										fetchOptions(`provincias/findByPais/1`);
-									}}
+									id="provincia"
+									value={selectedProvincia}
+									onChange={handleChangeProvincia}
+									disabled={!selectedPais}
 								>
 									<option value="">Seleccione una provincia</option>
-									{options.map((option) => (
+									{provincias.map((provincia) => (
 										<option
-											key={option.id}
-											value={option.id}
+											key={provincia.id}
+											value={provincia.id}
 										>
-											{option.name}
+											{provincia.nombre}
 										</option>
 									))}
-								</Form.Control>
+								</select>
 							</Form.Group>
 							<Form.Group controlId="localidad">
-								<Form.Label>Selecciona una Localidad</Form.Label>
-								<Form.Control
-									type="text"
+								<Form.Label>Localidad</Form.Label>
+								<select
 									name="localidad"
-									value={""} //todo
-									onChange={handleChange}
-								/>
+									id="localidad"
+									value={selectedLocalidad}
+									onChange={handleChangeLocalidad}
+									disabled={!selectedProvincia}
+								>
+									<option value="">Seleccione una localidad</option>
+									{localidades.map((localidad) => (
+										<option
+											key={localidad.id}
+											value={localidad.id}
+										>
+											{localidad.nombre}
+										</option>
+									))}
+								</select>
 							</Form.Group>
 							<Form.Group controlId="latitud">
 								<Form.Label>Latitud</Form.Label>
 								<Form.Control
 									type="number"
 									name="latitud"
-									value={data.latitud}
+									value={newSucursal.latitud}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -235,7 +292,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 								<Form.Control
 									type="number"
 									name="longitud"
-									value={data.longitud}
+									value={newSucursal.longitud}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -247,7 +304,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 								<Form.Control
 									type="text"
 									name="calle"
-									value={data.calle}
+									value={newSucursal.domicilio.calle}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -256,7 +313,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 								<Form.Control
 									type="number"
 									name="numero"
-									value={data.numeroCalle}
+									value={newSucursal.domicilio.numero}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -265,7 +322,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 								<Form.Control
 									type="number"
 									name="cp"
-									value={data.cp}
+									value={newSucursal.domicilio.cp}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -274,7 +331,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 								<Form.Control
 									type="number"
 									name="piso"
-									value={data.piso}
+									value={newSucursal.domicilio.piso}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -283,7 +340,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 								<Form.Control
 									type="number"
 									name="nroDpto"
-									value={data.nroDpto}
+									value={newSucursal.domicilio.nroDpto}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -298,7 +355,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empres
 									<Form.Control
 										type="text"
 										name="logo"
-										value={data.logo || ""}
+										value={newSucursal.logo || ""}
 										onChange={handleChange}
 									/>
 								</Form.Group>

@@ -5,7 +5,7 @@ import { IUpdateSucursal } from "../types/dtos/sucursal/IUpdateSucursal";
 
 export const BASE_URL_SUCURSALES = "http://190.221.207.224:8090/sucursales";
 
-export const SucursalService = {
+export const sucursalService = {
 	async getSucursalByID(id: Number): Promise<ISucursal> {
 		const response = await axios.get<ISucursal>(`${BASE_URL_SUCURSALES}/${id}`);
 		return response.data;

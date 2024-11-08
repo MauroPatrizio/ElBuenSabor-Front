@@ -2,7 +2,7 @@ import { RootState } from "../../../redux/store/store";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
-import { BASE_URL_SUCURSALES } from "../../../services/SucursalService";
+import { BASE_URL_SUCURSALES } from "../../../services/sucursalService";
 import SucursalCard from "../../ui/SucursalCard/SucursalCard";
 import styles from "./ViewSucursales.module.css";
 import { Button } from "react-bootstrap";
@@ -68,7 +68,7 @@ export const ViewSucursales = () => {
 					<ModalCrearSucursal
 						show={openCrearSucursal}
 						onHide={handleClose}
-						empresa={selectedEmpresa}
+						idEmpresa={selectedEmpresa?.id ?? 0}
 					/>
 				</>
 			)}
