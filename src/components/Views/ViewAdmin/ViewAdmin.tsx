@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Container, Navbar } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,29 +7,23 @@ import ProductList from "../../listas/ListProducts/ProductList";
 import AlergenosList from "../../listas/ListAlergenos/AlergenosList";
 import { IProductos } from "../../../types/dtos/productos/IProductos";
 import { productoService } from "../../../services/productoService";
-import {categoriaService} from "../../../services/categoriaService"
+import { categoriaService } from "../../../services/categoriaService";
 import { alergenoService } from "../../../services/alergenoService";
 import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
 import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
 import ModalCrearProducto from "../../modals/Producto/ModalCrearProducto/ModalCrearProducto";
-
+import ModalCrearAlergeno from "../../modals/Alergenos/ModalCrearAlergenos/ModalCrearAlergeno";
+import ModalCrearCategoria from "../../modals/Categorias/ModalCrearCategoria/ModalCrearCategoria";
 
 const ViewAdmin: React.FC = () => {
-  
-
   const [productos, setProductos] = useState<IProductos[]>([]);
-  const [categorias, setCategorias] = useState<ICategorias[]>([])
-  const [alergenos, setAlergenos] = useState<IAlergenos[]>([])
-  // Estado que guarda la pestaña activa
-  const [activeTab, setActiveTab] = useState<
-    "Categorias" | "Productos" | "Alergenos"
-  >("Categorias");
+  const [categorias, setCategorias] = useState<ICategorias[]>([]);
+  const [alergenos, setAlergenos] = useState<IAlergenos[]>([]);
+  const [activeTab, setActiveTab] = useState<"Categorias" | "Productos" | "Alergenos">("Categorias");
   const navigate = useNavigate();
   const location = useLocation();
+  const { branchName } = location.state || [];
 
-
-  const {branchName} = location.state || []
-  // Función para cambiar la pestaña activa
   const handleTabChange = (tab: "Categorias" | "Productos" | "Alergenos") => {
     setActiveTab(tab);
   };
@@ -39,44 +32,51 @@ const ViewAdmin: React.FC = () => {
     navigate("/"); //VUELVE AL HOME 
   };
 
-  const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
+  // Estados para controlar la visibilidad de cada modal
+  const [showProductoModal, setShowProductoModal] = useState(false);
+  const [showCategoriaModal, setShowCategoriaModal] = useState(false);
+  const [showAlergenoModal, setShowAlergenoModal] = useState(false);
 
-	const handleOpenPopUp = () => {
-		setMostrarPopUp(true);
-	};
+  // Abre el modal según la pestaña activa
+  const handleOpenModal = () => {
+    if (activeTab === "Productos") setShowProductoModal(true);
+    else if (activeTab === "Categorias") setShowCategoriaModal(true);
+    else if (activeTab === "Alergenos") setShowAlergenoModal(true);
+  };
 
-	const handleClosePopUp = () => {
-		setMostrarPopUp(false);
-	};
-
+  // Cierra los modales
+  const handleCloseModals = () => {
+    setShowProductoModal(false);
+    setShowCategoriaModal(false);
+    setShowAlergenoModal(false);
+  };
 
   useEffect(() => {
     const fetch = async () => {
-        try {
-            switch (activeTab) {
-                case "Categorias":
-                    const categoriaDatos = await categoriaService.getAllCategorias();
-                    setCategorias(categoriaDatos);
-                    break;
-                case "Productos":
-                    const productoDatos = await productoService.getAllProductos();
-                    setProductos(productoDatos);
-                    break;
-                case "Alergenos":
-                    const alergenoDatos = await alergenoService.getAllAlergenos();
-                    setAlergenos(alergenoDatos);
-                    break;
-                default:
-                    break;
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
+      try {
+        switch (activeTab) {
+          case "Categorias":
+            const categoriaDatos = await categoriaService.getAllCategorias();
+            setCategorias(categoriaDatos);
+            break;
+          case "Productos":
+            const productoDatos = await productoService.getAllProductos();
+            setProductos(productoDatos);
+            break;
+          case "Alergenos":
+            const alergenoDatos = await alergenoService.getAllAlergenos();
+            setAlergenos(alergenoDatos);
+            break;
+          default:
+            break;
         }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
     fetch();
-}, [activeTab]);
-
+  }, [activeTab]);
 
   return (
     <div className={style.principalContainerAdmin}>
@@ -118,23 +118,27 @@ const ViewAdmin: React.FC = () => {
             Alergenos
           </button>
         </div>
-        {mostrarPopUp && (
-				<>
-					<ModalCrearProducto
-						show={mostrarPopUp}
-						onHide={handleClosePopUp}
-					/>
-				</>
-			)}
+
+        {/* Modales */}
+        {showProductoModal && (
+          <ModalCrearProducto show={showProductoModal} onHide={handleCloseModals} />
+        )}
+        {showCategoriaModal && (
+          <ModalCrearCategorias show={showCategoriaModal} onHide={handleCloseModals} />
+        )}
+        {showAlergenoModal && (
+          <ModalCrearAlergenos show={showAlergenoModal} onHide={handleCloseModals} />
+        )}
+
         {/* Contenido de la pestaña activa */}
         <div className="content-area">
           <h3>{activeTab.toUpperCase()}</h3>
-          <button onClick={handleOpenPopUp}>AGREGAR {activeTab.toUpperCase()}</button>
+          <button onClick={handleOpenModal}>AGREGAR {activeTab.toUpperCase()}</button>
 
           <div>
             {activeTab === "Categorias" && <CategorieList categorias={categorias} />}
-            {activeTab === "Productos" && <ProductList productos={productos}/>}
-            {activeTab === "Alergenos" && <AlergenosList alergenos={alergenos}/>}
+            {activeTab === "Productos" && <ProductList productos={productos} />}
+            {activeTab === "Alergenos" && <AlergenosList alergenos={alergenos} />}
           </div>
         </div>
       </div>
