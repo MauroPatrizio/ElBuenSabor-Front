@@ -2,8 +2,8 @@ import { FC, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import styles from "./SucursalCard.module.css";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
-import { ModalEditSucursal } from "../../modals/Sucursal/ModalEditSucursal/ModalEditSucursal";
 import { ModalVerSucursal } from "../../modals/Sucursal/ModalVerSucursal/ModalVerSucursal";
+import ModalEditarSucursal from "../../modals/Sucursal/ModalEditarSucursal/ModalEditarSucursal";
 
 interface SucursalCardProps {
 	sucursal: ISucursal;
@@ -55,7 +55,7 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 				</Card.Body>
 			</Card>
 			{/* Modal Edit */}
-			<ModalEditSucursal
+			<ModalEditarSucursal
 				show={editOpen}
 				onHide={handleEditClose}
 				sucursal={sucursal}

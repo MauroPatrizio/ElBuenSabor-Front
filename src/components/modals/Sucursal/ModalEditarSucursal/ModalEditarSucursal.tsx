@@ -2,45 +2,50 @@ import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { sucursalService } from "../../../../services/sucursalService";
 import Swal from "sweetalert2";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import styles from "./ModalCrearSucursal.module.css";
-import { ICreateSucursal } from "../../../../types/dtos/sucursal/ICreateSucursal";
 import { IPais } from "../../../../types/IPais";
 import { IProvincia } from "../../../../types/IProvincia";
 import { ILocalidad } from "../../../../types/ILocalidad";
 import { paisService } from "../../../../services/paisService";
 import { provinciaService } from "../../../../services/provinciaService";
 import { localidadService } from "../../../../services/localidadService";
+import { IUpdateSucursal } from "../../../../types/dtos/sucursal/IUpdateSucursal";
+import { ISucursal } from "../../../../types/dtos/sucursal/ISucursal";
+import styles from "./ModalEditSucursal.module.css";
 
-interface IModalCrearSucursalProps {
+interface IModalEditarSucursalProps {
 	show: boolean;
 	onHide: () => void;
-	idEmpresa: number;
+	sucursal: ISucursal;
 }
 
-const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpresa }) => {
-	const [newSucursal, setNewSucursal] = useState<ICreateSucursal>({
-		nombre: "",
-		horarioApertura: "",
-		horarioCierre: "",
-		esCasaMatriz: false,
-		latitud: 0,
-		longitud: 0,
+const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucursal }) => {
+	const [formData, setFormData] = useState<IUpdateSucursal>({
+		nombre: sucursal.nombre,
+		idEmpresa: sucursal.empresa.id,
+		eliminado: sucursal.eliminado,
+		latitud: sucursal.latitud,
+		longitud: sucursal.longitud,
 		domicilio: {
-			calle: "",
-			numero: 0,
-			cp: 0,
-			piso: 0,
-			nroDpto: 0,
-			idLocalidad: 0,
+			id: sucursal.domicilio.id,
+			calle: sucursal.domicilio.calle,
+			numero: sucursal.domicilio.numero,
+			cp: sucursal.domicilio.cp,
+			piso: sucursal.domicilio.piso,
+			nroDpto: sucursal.domicilio.nroDpto,
+			idLocalidad: sucursal.domicilio.localidad.id,
 		},
-		idEmpresa: idEmpresa,
-		logo: "",
+		logo: sucursal.logo || "",
+		categorias: sucursal.categorias || [],
+		esCasaMatriz: sucursal.esCasaMatriz || false,
+		horarioApertura: sucursal.horarioApertura || "",
+		horarioCierre: sucursal.horarioCierre || "",
+		id: sucursal.id,
 	});
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const { name, value, type, checked } = e.target;
+		const { name, value, type } = e.target;
 
-		setNewSucursal((prev) => {
+		setFormData((prev) => {
 			if (name in prev.domicilio) {
 				return {
 					...prev,
@@ -52,8 +57,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 			}
 			return {
 				...prev,
-				[name]:
-					type === "checkbox" ? checked : type === "number" ? parseFloat(value) : value,
+				[name]: value,
 			};
 		});
 	};
@@ -62,7 +66,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 		e.preventDefault();
 
 		try {
-			await sucursalService.createSucursal(newSucursal);
+			await sucursalService.createSucursal(formData);
 
 			Swal.fire({
 				icon: "success",
@@ -131,7 +135,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 		const idLocalidad = parseInt(e.target.value);
 		setSelectedLocalidad(e.target.value);
 
-		setNewSucursal((prev) => ({
+		setFormData((prev) => ({
 			...prev,
 			domicilio: {
 				...prev.domicilio,
@@ -163,7 +167,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 									type="text"
 									name="nombre"
 									onChange={handleChange}
-									value={newSucursal.nombre}
+									value={formData.nombre}
 								/>
 							</Form.Group>
 							<Form.Group controlId="horarioApertura">
@@ -172,7 +176,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 									type="time"
 									name="horarioApertura"
 									onChange={handleChange}
-									value={newSucursal.horarioApertura}
+									value={formData.horarioApertura}
 								/>
 							</Form.Group>
 							<Form.Group controlId="horarioCierre">
@@ -181,7 +185,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 									type="time"
 									name="horarioCierre"
 									onChange={handleChange}
-									value={newSucursal.horarioCierre}
+									value={formData.horarioCierre}
 								/>
 							</Form.Group>
 							<Form.Group
@@ -191,7 +195,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Check
 									type="checkbox"
 									label="Casa Matriz"
-									checked={newSucursal.esCasaMatriz}
+									checked={formData.esCasaMatriz}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -263,7 +267,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Control
 									type="number"
 									name="latitud"
-									value={newSucursal.latitud}
+									value={formData.latitud}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -272,7 +276,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Control
 									type="number"
 									name="longitud"
-									value={newSucursal.longitud}
+									value={formData.longitud}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -284,7 +288,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Control
 									type="text"
 									name="calle"
-									value={newSucursal.domicilio.calle}
+									value={formData.domicilio.calle}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -293,7 +297,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Control
 									type="number"
 									name="numero"
-									value={newSucursal.domicilio.numero}
+									value={formData.domicilio.numero}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -302,7 +306,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Control
 									type="number"
 									name="cp"
-									value={newSucursal.domicilio.cp}
+									value={formData.domicilio.cp}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -311,7 +315,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Control
 									type="number"
 									name="piso"
-									value={newSucursal.domicilio.piso}
+									value={formData.domicilio.piso}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -320,7 +324,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 								<Form.Control
 									type="number"
 									name="nroDpto"
-									value={newSucursal.domicilio.nroDpto}
+									value={formData.domicilio.nroDpto}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -335,7 +339,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 									<Form.Control
 										type="text"
 										name="logo"
-										value={newSucursal.logo || ""}
+										value={formData.logo || ""}
 										onChange={handleChange}
 									/>
 								</Form.Group>
@@ -363,4 +367,4 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 	);
 };
 
-export default ModalCrearSucursal;
+export default ModalEditarSucursal;
