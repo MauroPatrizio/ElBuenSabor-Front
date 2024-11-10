@@ -29,12 +29,6 @@ export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide })
 		}));
 	};
 
-	// const [errors, setErrors ] = useState ({
-	// 	nombre: false,
-	// 	razonSocial: false,
-	// 	cuit: false,
-	// }) //TODO
-
 	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 

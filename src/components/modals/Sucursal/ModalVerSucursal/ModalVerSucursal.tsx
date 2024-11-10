@@ -18,7 +18,7 @@ export const ModalVerSucursal: FC<ModalVerSucursalProps> = ({ sucursal, show, on
 		>
 			<Modal.Header
 				closeButton
-				style={{ display: "flex", justifyContent: "center" }}
+				style={{ display: "flex", justifyContent: "center", alignContent: "center" }}
 			>
 				<Modal.Title>{sucursal.nombre}</Modal.Title>
 			</Modal.Header>

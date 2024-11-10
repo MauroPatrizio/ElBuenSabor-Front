@@ -1,8 +1,7 @@
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { sucursalService } from "../../../../services/sucursalService";
 import Swal from "sweetalert2";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import styles from "./ModalCrearSucursal.module.css";
+import { Button, Col, FloatingLabel, Form, Modal, Row } from "react-bootstrap";
 import { ICreateSucursal } from "../../../../types/dtos/sucursal/ICreateSucursal";
 import { IPais } from "../../../../types/IPais";
 import { IProvincia } from "../../../../types/IProvincia";
@@ -23,19 +22,34 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 		horarioApertura: "",
 		horarioCierre: "",
 		esCasaMatriz: false,
-		latitud: 0,
-		longitud: 0,
+		latitud: parseInt(""),
+		longitud: parseInt(""),
 		domicilio: {
 			calle: "",
-			numero: 0,
-			cp: 0,
-			piso: 0,
-			nroDpto: 0,
-			idLocalidad: 0,
+			numero: parseInt(""),
+			cp: parseInt(""),
+			piso: parseInt(""),
+			nroDpto: parseInt(""),
+			idLocalidad: parseInt(""),
 		},
 		idEmpresa: idEmpresa,
 		logo: "",
 	});
+
+	const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+	const formValidar = () => {
+		const errors: { [key: string]: string } = {};
+
+		if (!formData.nombre) errors.nombre = "Campo obligatorio.";
+		if (!formData.horarioApertura) errors.horarioApertura = "Campo obligatorio.";
+		if (!formData.horarioCierre) errors.horarioCierre = "Campo obligatorio.";
+		if (!selectedPais) errors.pais = "Campo obligatorio";
+		if (!selectedProvincia) errors.provincia = "Campo obligatorio";
+		if (!selectedLocalidad) errors.localidad = "Campo obligatorio";
+
+		return errors;
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value, type, checked } = e.target;
@@ -56,10 +70,27 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 					type === "checkbox" ? checked : type === "number" ? parseFloat(value) : value,
 			};
 		});
+
+		setFormErrors((prevErrors) => {
+			if (value.trim() !== "") {
+				const { [name]: removedError, ...restErrors } = prevErrors;
+				return restErrors;
+			}
+			return prevErrors;
+		});
 	};
 
 	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
+
+		setFormErrors({});
+
+		const errors = formValidar();
+
+		if (Object.keys(errors).length > 0) {
+			setFormErrors(errors);
+			return;
+		}
 
 		try {
 			await sucursalService.createSucursal(formData);
@@ -73,6 +104,8 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 					window.location.reload();
 				},
 			});
+
+			setFormErrors({});
 		} catch (e) {
 			console.error(e);
 			Swal.fire({
@@ -118,19 +151,34 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 	}, [selectedPais, selectedProvincia]);
 
 	const handleChangePais = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-		setSelectedPais(e.target.value);
+		const selectedValue = e.target.value;
+		setSelectedPais(selectedValue);
 		setSelectedProvincia("");
 		setSelectedLocalidad("");
+
+		setFormErrors((prevErrors) => {
+			const { pais, ...restErrors } = prevErrors;
+			return e.target.value ? restErrors : { ...prevErrors, pais: "Seleccione un pais" };
+		});
 	}, []);
 
 	const handleChangeProvincia = (e: ChangeEvent<HTMLSelectElement>) => {
-		setSelectedProvincia(e.target.value);
+		const selectedValue = e.target.value;
+		setSelectedProvincia(selectedValue);
 		setSelectedLocalidad("");
+
+		setFormErrors((prevErrors) => {
+			const { provincia, ...restErrors } = prevErrors;
+			return e.target.value
+				? restErrors
+				: { ...prevErrors, provincia: "Seleccione una provincia" };
+		});
 	};
 
 	const handleChangeLocalidad = (e: ChangeEvent<HTMLSelectElement>) => {
-		const idLocalidad = parseInt(e.target.value);
-		setSelectedLocalidad(e.target.value);
+		const selectedValue = e.target.value;
+		const idLocalidad = parseInt(selectedValue);
+		setSelectedLocalidad(selectedValue);
 
 		setFormData((prev) => ({
 			...prev,
@@ -139,6 +187,13 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 				idLocalidad: idLocalidad,
 			},
 		}));
+
+		setFormErrors((prevErrors) => {
+			const { localidad, ...restErrors } = prevErrors;
+			return e.target.value
+				? restErrors
+				: { ...prevErrors, localidad: "Seleccione una localidad" };
+		});
 	};
 
 	return (
@@ -146,7 +201,6 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 			show={show}
 			onHide={onHide}
 			aria-labelledby="modal-title"
-			className={styles["Modal-main"]}
 			size="xl"
 			centered
 			backdrop="static"
@@ -154,40 +208,72 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 			<Modal.Header closeButton>
 				<Modal.Title>Crear Sucursal</Modal.Title>
 			</Modal.Header>
-			<Modal.Body className={styles["Modal-body"]}>
+			<Modal.Body>
 				<Form>
 					<Row>
 						<Col md={4}>
-							<Form.Group controlId="nombre">
-								<Form.Label>Ingresa un nombre</Form.Label>
-								<Form.Control
-									type="text"
-									name="nombre"
-									onChange={handleChange}
-									value={formData.nombre}
-								/>
+							<Form.Group
+								controlId="nombre"
+								className="mb-3"
+							>
+								<FloatingLabel
+									controlId="floatingInput"
+									label="Nombre"
+									className="mb-3"
+								>
+									<Form.Control
+										type="text"
+										name="nombre"
+										onChange={handleChange}
+										value={formData.nombre}
+										isInvalid={!!formErrors.nombre}
+									/>
+									<Form.Control.Feedback type="invalid">
+										{formErrors.nombre}
+									</Form.Control.Feedback>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="horarioApertura">
-								<Form.Label>Horario de Apertura</Form.Label>
-								<Form.Control
-									type="time"
-									name="horarioApertura"
-									onChange={handleChange}
-									value={formData.horarioApertura}
-								/>
+							<Form.Group
+								controlId="horarioApertura"
+								className="mb-3"
+							>
+								<FloatingLabel
+									controlId="floatingInput"
+									label="Apertura"
+									className="mb-3"
+								>
+									<Form.Control
+										type="time"
+										name="horarioApertura"
+										onChange={handleChange}
+										value={formData.horarioApertura}
+										isInvalid={!!formErrors.horarioApertura}
+									/>
+									<Form.Control.Feedback type="invalid">
+										{formErrors.horarioApertura}
+									</Form.Control.Feedback>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="horarioCierre">
-								<Form.Label>Horario de Cierre</Form.Label>
-								<Form.Control
-									type="time"
-									name="horarioCierre"
-									onChange={handleChange}
-									value={formData.horarioCierre}
-								/>
+							<Form.Group
+								controlId="horarioCierre"
+								className="mb-3"
+							>
+								<FloatingLabel label="Cierre">
+									<Form.Control
+										type="time"
+										name="horarioCierre"
+										onChange={handleChange}
+										value={formData.horarioCierre}
+										isInvalid={!!formErrors.horarioCierre}
+									/>
+									<Form.Control.Feedback type="invalid">
+										{formErrors.horarioCierre}
+									</Form.Control.Feedback>
+								</FloatingLabel>
 							</Form.Group>
 							<Form.Group
 								controlId="esCasaMatriz"
-								className={styles["div-checkbox"]}
+								className="mb-3"
 							>
 								<Form.Check
 									type="checkbox"
@@ -200,148 +286,213 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 						</Col>
 
 						<Col md={4}>
-							<Form.Group controlId="pais">
-								<Form.Label>País</Form.Label>
-								<Form.Select
-									name="pais"
-									id="pais"
-									value={selectedPais}
-									onChange={handleChangePais}
-								>
-									<option value="">Seleccione un pais</option>
-									{paises.map((pais) => (
-										<option
-											key={pais.id}
-											value={pais.id}
-										>
-											{pais.nombre}
-										</option>
-									))}
-								</Form.Select>
+							<Form.Group
+								controlId="pais"
+								className="mb-3"
+							>
+								<FloatingLabel label="Pais">
+									<Form.Select
+										name="pais"
+										id="pais"
+										value={selectedPais}
+										onChange={handleChangePais}
+										isInvalid={!!formErrors.pais}
+									>
+										<option value="">Abrir el menú</option>
+										{paises.map((pais) => (
+											<option
+												key={pais.id}
+												value={pais.id}
+											>
+												{pais.nombre}
+											</option>
+										))}
+									</Form.Select>
+									<Form.Control.Feedback type="invalid">
+										{formErrors.pais}
+									</Form.Control.Feedback>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="provincia">
-								<Form.Label>Provincia</Form.Label>
-								<Form.Select
-									name="provincia"
-									id="provincia"
-									value={selectedProvincia}
-									onChange={handleChangeProvincia}
-									disabled={!selectedPais}
-								>
-									<option value="">Seleccione una provincia</option>
-									{provincias.map((provincia) => (
-										<option
-											key={provincia.id}
-											value={provincia.id}
-										>
-											{provincia.nombre}
-										</option>
-									))}
-								</Form.Select>
+							<Form.Group
+								controlId="provincia"
+								className="mb-3"
+							>
+								<FloatingLabel label="Provincia">
+									<Form.Select
+										name="provincia"
+										id="provincia"
+										value={selectedProvincia}
+										onChange={handleChangeProvincia}
+										disabled={!selectedPais}
+										isInvalid={!!formErrors.provincia}
+									>
+										<option value="">Abrir el menú</option>
+										{provincias.map((provincia) => (
+											<option
+												key={provincia.id}
+												value={provincia.id}
+											>
+												{provincia.nombre}
+											</option>
+										))}
+									</Form.Select>
+									<Form.Control.Feedback type="invalid">
+										{formErrors.provincia}
+									</Form.Control.Feedback>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="localidad">
-								<Form.Label>Localidad</Form.Label>
-								<Form.Select
-									name="localidad"
-									id="localidad"
-									value={selectedLocalidad}
-									onChange={handleChangeLocalidad}
-									disabled={!selectedProvincia}
-									className={styles["select-modal"]}
-								>
-									<option value="">Seleccione una localidad</option>
-									{localidades.map((localidad) => (
-										<option
-											key={localidad.id}
-											value={localidad.id}
-										>
-											{localidad.nombre}
-										</option>
-									))}
-								</Form.Select>
+							<Form.Group
+								controlId="localidad"
+								className="mb-3"
+							>
+								<FloatingLabel label="Localidad">
+									<Form.Select
+										name="localidad"
+										id="localidad"
+										value={selectedLocalidad}
+										onChange={handleChangeLocalidad}
+										disabled={!selectedProvincia}
+										isInvalid={!!formErrors.localidad}
+									>
+										<option value="">Abrir el Menú</option>
+										{localidades.map((localidad) => (
+											<option
+												key={localidad.id}
+												value={localidad.id}
+											>
+												{localidad.nombre}
+											</option>
+										))}
+									</Form.Select>
+									<Form.Control.Feedback type="invalid">
+										{formErrors.localidad}
+									</Form.Control.Feedback>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="latitud">
-								<Form.Label>Latitud</Form.Label>
-								<Form.Control
-									type="number"
-									name="latitud"
-									value={formData.latitud}
-									onChange={handleChange}
-								/>
+							<Form.Group
+								controlId="latitud"
+								className="mb-3"
+							>
+								<FloatingLabel label="Latitud">
+									<Form.Control
+										type="number"
+										name="latitud"
+										value={formData.latitud}
+										onChange={handleChange}
+									/>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="longitud">
-								<Form.Label>Longitud</Form.Label>
-								<Form.Control
-									type="number"
-									name="longitud"
-									value={formData.longitud}
-									onChange={handleChange}
-								/>
+							<Form.Group
+								controlId="longitud"
+								className="mb-3"
+							>
+								<FloatingLabel label="Longitud">
+									<Form.Control
+										type="number"
+										name="longitud"
+										value={formData.longitud}
+										onChange={handleChange}
+									/>
+								</FloatingLabel>
 							</Form.Group>
 						</Col>
 
 						<Col md={4}>
-							<Form.Group controlId="calle">
-								<Form.Label>Nombre de la calle</Form.Label>
-								<Form.Control
-									type="text"
-									name="calle"
-									value={formData.domicilio.calle}
-									onChange={handleChange}
-								/>
+							<Form.Group
+								controlId="calle"
+								className="mb-3"
+							>
+								<FloatingLabel label="Nombre de la calle">
+									<Form.Control
+										type="text"
+										name="calle"
+										value={formData.domicilio.calle}
+										onChange={handleChange}
+									/>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="numero">
-								<Form.Label>Número de la calle</Form.Label>
-								<Form.Control
-									type="number"
-									name="numero"
-									value={formData.domicilio.numero}
-									onChange={handleChange}
-								/>
+							<Form.Group
+								controlId="numero"
+								className="mb-3"
+							>
+								<FloatingLabel label="Número de la calle">
+									<Form.Control
+										type="number"
+										name="numero"
+										value={formData.domicilio.numero}
+										onChange={handleChange}
+									/>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="cp">
-								<Form.Label>Código Postal</Form.Label>
-								<Form.Control
-									type="number"
-									name="cp"
-									value={formData.domicilio.cp}
-									onChange={handleChange}
-								/>
+							<Form.Group
+								controlId="cp"
+								className="mb-3"
+							>
+								<FloatingLabel label="Código Postal">
+									<Form.Control
+										type="number"
+										name="cp"
+										value={formData.domicilio.cp}
+										onChange={handleChange}
+									/>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="piso">
-								<Form.Label>Ingresa un número de piso</Form.Label>
-								<Form.Control
-									type="number"
-									name="piso"
-									value={formData.domicilio.piso}
-									onChange={handleChange}
-								/>
+							<Form.Group
+								controlId="piso"
+								className="mb-3"
+							>
+								<FloatingLabel label="Piso">
+									<Form.Control
+										type="number"
+										name="piso"
+										value={formData.domicilio.piso}
+										onChange={handleChange}
+									/>
+								</FloatingLabel>
 							</Form.Group>
-							<Form.Group controlId="nroDpto">
-								<Form.Label>Ingresa un número de departamento</Form.Label>
-								<Form.Control
-									type="number"
-									name="nroDpto"
-									value={formData.domicilio.nroDpto}
-									onChange={handleChange}
-								/>
+							<Form.Group
+								controlId="nroDpto"
+								className="mb-3"
+							>
+								<FloatingLabel label="Departamento">
+									<Form.Control
+										type="number"
+										name="nroDpto"
+										value={formData.domicilio.nroDpto}
+										onChange={handleChange}
+									/>
+								</FloatingLabel>
 							</Form.Group>
 						</Col>
 					</Row>
 
 					<Row>
-						<Col>
-							<div className={styles["div-imagen"]}>
-								<Form.Group controlId="imagen">
-									<Form.Label>Ingresa la URL de la imagen</Form.Label>
+						<Col
+							md={9}
+							className="d-flex align-items-center"
+						>
+							<Form.Group
+								controlId="imagen"
+								className="w-100"
+							>
+								<FloatingLabel label="Ingresa la URL de la imagen">
 									<Form.Control
 										type="text"
 										name="logo"
 										value={formData.logo || ""}
 										onChange={handleChange}
 									/>
-								</Form.Group>
-							</div>
+								</FloatingLabel>
+							</Form.Group>
+						</Col>
+						<Col
+							md={3}
+							className="d-flex justify-content-center align-items-center"
+						>
+							<img
+								src={formData.logo || ""}
+								style={{ maxWidth: "100%", height: "auto" }}
+							/>
 						</Col>
 					</Row>
 				</Form>
