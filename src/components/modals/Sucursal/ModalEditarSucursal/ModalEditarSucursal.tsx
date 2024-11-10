@@ -51,13 +51,13 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 					...prev,
 					domicilio: {
 						...prev.domicilio,
-						[name]: type === "number" ? parseInt(value) : value,
+						[name]: type === "number" ? (value === "" ? "" : parseInt(value)) : value,
 					},
 				};
 			}
 			return {
 				...prev,
-				[name]: value,
+				[name]: type === "number" ? (value === "" ? "" : parseFloat(value)) : value,
 			};
 		});
 	};
@@ -66,7 +66,7 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 		e.preventDefault();
 
 		try {
-			await sucursalService.createSucursal(formData);
+			await sucursalService.updateSucursal(formData.id, formData);
 
 			Swal.fire({
 				icon: "success",
@@ -80,7 +80,7 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 		} catch (e) {
 			Swal.fire({
 				icon: "error",
-				title: "No se pudo actulizar la sucursal",
+				title: "No se pudo actualizar la sucursal",
 				showCloseButton: true,
 			});
 		}
@@ -90,9 +90,13 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 	const [provincias, setProvincias] = useState<IProvincia[]>([]);
 	const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
-	const [selectedPais, setSelectedPais] = useState<string>("");
-	const [selectedProvincia, setSelectedProvincia] = useState<string>("");
-	const [selectedLocalidad, setSelectedLocalidad] = useState<string>("");
+	const [selectedPais, setSelectedPais] = useState(
+		sucursal.domicilio.localidad.provincia.pais.id
+	);
+	const [selectedProvincia, setSelectedProvincia] = useState(
+		sucursal.domicilio.localidad.provincia.id
+	);
+	const [selectedLocalidad, setSelectedLocalidad] = useState(sucursal.domicilio.localidad.id);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -121,19 +125,19 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 	}, [selectedPais, selectedProvincia]);
 
 	const handleChangePais = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-		setSelectedPais(e.target.value);
-		setSelectedProvincia("");
-		setSelectedLocalidad("");
+		setSelectedPais(parseInt(e.target.value));
+		setSelectedProvincia(NaN);
+		setSelectedLocalidad(NaN);
 	}, []);
 
 	const handleChangeProvincia = (e: ChangeEvent<HTMLSelectElement>) => {
-		setSelectedProvincia(e.target.value);
-		setSelectedLocalidad("");
+		setSelectedProvincia(parseInt(e.target.value));
+		setSelectedLocalidad(NaN);
 	};
 
 	const handleChangeLocalidad = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idLocalidad = parseInt(e.target.value);
-		setSelectedLocalidad(e.target.value);
+		setSelectedLocalidad(parseInt(e.target.value));
 
 		setFormData((prev) => ({
 			...prev,
