@@ -10,7 +10,7 @@ import { provinciaService } from "../../../../services/provinciaService";
 import { localidadService } from "../../../../services/localidadService";
 import { IUpdateSucursal } from "../../../../types/dtos/sucursal/IUpdateSucursal";
 import { ISucursal } from "../../../../types/dtos/sucursal/ISucursal";
-import styles from "./ModalEditSucursal.module.css";
+import styles from "./ModalEditarSucursal.module.css";
 
 interface IModalEditarSucursalProps {
 	show: boolean;
@@ -70,7 +70,7 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 
 			Swal.fire({
 				icon: "success",
-				title: "Sucursal Creada",
+				title: "Sucursal Actualizada",
 				showCancelButton: false,
 				timer: 1800,
 				didClose: () => {
@@ -80,7 +80,7 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 		} catch (e) {
 			Swal.fire({
 				icon: "error",
-				title: "No se pudo carga la sucursal",
+				title: "No se pudo actulizar la sucursal",
 				showCloseButton: true,
 			});
 		}
@@ -155,14 +155,14 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 			backdrop="static"
 		>
 			<Modal.Header closeButton>
-				<Modal.Title>Crear Sucursal</Modal.Title>
+				<Modal.Title>Editar Sucursal</Modal.Title>
 			</Modal.Header>
 			<Modal.Body className={styles["Modal-body"]}>
 				<Form>
 					<Row>
 						<Col md={4}>
 							<Form.Group controlId="nombre">
-								<Form.Label>Ingresa un nombre</Form.Label>
+								<Form.Label>Nombre</Form.Label>
 								<Form.Control
 									type="text"
 									name="nombre"
@@ -195,6 +195,7 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 								<Form.Check
 									type="checkbox"
 									label="Casa Matriz"
+									name="esCasaMatriz"
 									checked={formData.esCasaMatriz}
 									onChange={handleChange}
 								/>

@@ -31,11 +31,19 @@ export const ModalVerSucursal: FC<ModalVerSucursalProps> = ({ sucursal, show, on
 						<b>Cierre:</b> {sucursal.horarioCierre}
 					</p>
 					<p>
-						<b>¿Es casa Matriz?:</b> {sucursal.esCasaMatriz}
+						<b>¿Es casa Matriz?:</b> {sucursal.esCasaMatriz ? "Si" : "No"}
 					</p>
-					{/* <p><b>Pais:</b> {sucursal.pais}</p>
-					<p> <b>Provincia:</b> {sucursal.provincia}</p>
-					<p> <b>Localidad:</b> {sucursal.localidad}</p> */}
+					<p>
+						<b>Pais:</b> {sucursal.domicilio.localidad.provincia.pais.nombre}
+					</p>
+					<p>
+						{" "}
+						<b>Provincia:</b> {sucursal.domicilio.localidad.provincia.nombre}
+					</p>
+					<p>
+						{" "}
+						<b>Localidad:</b> {sucursal.domicilio.localidad.nombre}
+					</p>
 					<p>
 						<b>Latitud:</b> {sucursal.latitud}
 					</p>
@@ -43,7 +51,7 @@ export const ModalVerSucursal: FC<ModalVerSucursalProps> = ({ sucursal, show, on
 						<b>Longitud:</b> {sucursal.longitud}
 					</p>
 					<p>
-						<b>Calle:</b> {sucursal.calle}
+						<b>Calle:</b> {sucursal.domicilio.calle}
 					</p>
 					<p>
 						<b>Numero:</b> {sucursal.domicilio.numero}
