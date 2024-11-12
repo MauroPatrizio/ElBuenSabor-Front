@@ -13,6 +13,7 @@ interface IModalEditarAlergenoProps {
 
 
 const ModalEditarAlergeno: FC<IModalEditarAlergenoProps> = ({show, onHide, alergeno }) => {
+
   
   const [formData, setFormData] = useState<IUpdateAlergeno>({
 		denominacion: alergeno.denominacion,
