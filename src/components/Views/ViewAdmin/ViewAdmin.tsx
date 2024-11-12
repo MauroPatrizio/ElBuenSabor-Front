@@ -32,24 +32,6 @@ const ViewAdmin: React.FC = () => {
     navigate("/"); //VUELVE AL HOME 
   };
 
-  // Estados para controlar la visibilidad de cada modal
-  const [showProductoModal, setShowProductoModal] = useState(false);
-  const [showCategoriaModal, setShowCategoriaModal] = useState(false);
-  const [showAlergenoModal, setShowAlergenoModal] = useState(false);
-
-  // Abre el modal según la pestaña activa
-  const handleOpenModal = () => {
-    if (activeTab === "Productos") setShowProductoModal(true);
-    else if (activeTab === "Categorias") setShowCategoriaModal(true);
-    else if (activeTab === "Alergenos") setShowAlergenoModal(true);
-  };
-
-  // Cierra los modales
-  const handleCloseModals = () => {
-    setShowProductoModal(false);
-    setShowCategoriaModal(false);
-    setShowAlergenoModal(false);
-  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -118,23 +100,9 @@ const ViewAdmin: React.FC = () => {
             Alergenos
           </button>
         </div>
-
-        {/* Modales */}
-        {showProductoModal && (
-          <ModalCrearProducto show={showProductoModal} onHide={handleCloseModals} />
-        )}
-        {showCategoriaModal && (
-          <ModalCrearCategorias show={showCategoriaModal} onHide={handleCloseModals} />
-        )}
-        {showAlergenoModal && (
-          <ModalCrearAlergenos show={showAlergenoModal} onHide={handleCloseModals} />
-        )}
-
+       
         {/* Contenido de la pestaña activa */}
         <div className="content-area">
-          <h3>{activeTab.toUpperCase()}</h3>
-          <button onClick={handleOpenModal}>AGREGAR {activeTab.toUpperCase()}</button>
-
           <div>
             {activeTab === "Categorias" && <CategorieList categorias={categorias} />}
             {activeTab === "Productos" && <ProductList productos={productos} />}
