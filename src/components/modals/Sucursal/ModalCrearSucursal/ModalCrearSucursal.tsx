@@ -1,130 +1,126 @@
 import { FC, useEffect, useState } from "react";
+import { SucursalService } from "../../../../services/SucursalService";
+import Swal from "sweetalert2";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import styles from "./ModalCrearSucursal.module.css";
-import { ICreateSucursal } from "../../../../types/dtos/sucursal/ICreateSucursal";
-import { ISucursal } from "../../../../types/dtos/sucursal/ISucursal";
 import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
+import { ICreateSucursal } from "../../../../types/dtos/sucursal/ICreateSucursal";
+import { useForm } from "../../../../hooks/useForm";
 
-interface ModalSucursalProps {
+interface IModalCrearSucursalProps {
 	show: boolean;
 	onHide: () => void;
-	empresa: IEmpresa;
+	empresa: IEmpresa | null;
 }
 
-const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) => {
-	const [formData, setFormData] = useState<ICreateSucursal>({
-		nombre: "",
-		horarioApertura: "",
-		horarioCierre: "",
-		esCasaMatriz: false,
-		latitud: 0,
-		longitud: 0,
-		domicilio: {
-			calle: "",
-			numero: 0,
-			cp: 0,
-			piso: 0,
-			nroDpto: 0,
-			idLocalidad: 0,
-		},
-		idEmpresa: 0,
-		logo: "",
-	});
+interface Option {
+	id: string;
+	name: string;
+}
 
-	const [errors, setErrors] = useState({
-		nombre: false,
-		horarioApertura: false,
-		horarioCierre: false,
-		imagen: false,
-	});
+const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, empresa }) => {
+	if (!empresa) {
+		return null;
+	}
 
-	const handleChange = (
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }
-		>
-	) => {
-		const { name, value } = e.target;
-		setFormData({
-			...formData,
-			[name as keyof ICreateSucursal]: value,
-		});
-	};
+	const [options, setOptions] = useState<Option[]>([]);
 
-	const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		const { name, value } = e.target;
-		setFormData({
-			...formData,
-			[name as keyof ICreateSucursal]: value,
-		});
-	};
+	const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-	const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setFormData({ ...formData, esCasaMatriz: e.target.checked });
-	};
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-
-		if (!isEdit) {
-			const requiredErrors = {
-				nombre: formData.nombre === "",
-				horarioApertura: formData.horarioApertura === "",
-				horarioCierre: formData.horarioCierre === "",
-				imagen: formData.logo === "",
-			};
-
-			setErrors(requiredErrors);
-
-			if (Object.values(requiredErrors).some((error) => error)) {
-				return;
+	const fetchOptions = async (tipo: string) => {
+		try {
+			const response = await fetch(`http://190.221.207.224:8090/${tipo}`);
+			if (response.ok) {
+				const dato = await response.json();
+				setOptions(dato);
+			} else {
+				console.error("No se pudo cargar las opciones");
 			}
-		}
-
-		onAddSucursal(formData);
-		handleClose();
-		if (!isEdit) {
-			setFormData({
-				nombre: "",
-				horarioApertura: "",
-				horarioCierre: "",
-				esCasaMatriz: false,
-				latitud: 0,
-				longitud: 0,
-				domicilio: {
-					calle: "",
-					numero: 0,
-					cp: 0,
-					piso: 0,
-					nroDpto: 0,
-					idLocalidad: 0,
-				},
-				idEmpresa: 0,
-				logo: "",
-			});
-			setIsCasaMatriz(false);
+		} catch (e) {
+			console.error(e);
 		}
 	};
 
 	useEffect(() => {
-		if (isEdit && dataSucursal) {
-			setFormData(dataSucursal);
-			setIsCasaMatriz(dataSucursal.esCasaMatriz);
+		if (selectedOption) {
+			fetchOptions(selectedOption);
 		}
-	}, [isEdit, dataSucursal]);
+	}, [selectedOption]);
+
+	const { data, handleChange, handleSelectChange, resetForm } = useForm({
+		nombre: "",
+		horarioApertura: "",
+		horarioCierre: "",
+		esCasaMatriz: false,
+		pais: "",
+		provincia: "",
+		localidad: "",
+		latitud: 0,
+		longitud: 0,
+		calle: "",
+		numeroCalle: 0,
+		cp: 0,
+		piso: 0,
+		nroDpto: 0,
+		logo: "",
+	});
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		try {
+			const newSucursal: ICreateSucursal = {
+				nombre: data.nombre,
+				horarioApertura: data.horarioApertura,
+				horarioCierre: data.horarioCierre,
+				esCasaMatriz: data.esCasaMatriz,
+				latitud: data.latitud,
+				longitud: data.longitud,
+				domicilio: {
+					calle: data.calle,
+					numero: data.numeroCalle,
+					piso: data.piso,
+					nroDpto: data.nroDpto,
+					idLocalidad: 0,
+					cp: data.cp,
+				},
+				idEmpresa: empresa.id,
+				logo: data.logo,
+			};
+			await SucursalService.createSucursal(newSucursal);
+			Swal.fire({
+				icon: "success",
+				title: "Sucursal Creada",
+				showConfirmButton: false,
+				timer: 2000,
+			});
+			resetForm();
+			onHide();
+		} catch (e) {
+			Swal.fire({
+				icon: "error",
+				title: "No se pudo crear la sucursal",
+				text: `${e}`,
+				showConfirmButton: true,
+			});
+		}
+	};
 
 	return (
 		<Modal
-			show={handleOpen}
-			onHide={handleClose}
+			show={show}
+			onHide={onHide}
 			aria-labelledby="modal-title"
 			className={styles["Modal-main"]}
 			size="xl"
+			centered
+			backdrop="static"
 		>
 			<Modal.Header closeButton>
-				<Modal.Title>Crear / Editar Sucursal</Modal.Title>
+				<Modal.Title>Crear Sucursal</Modal.Title>
 			</Modal.Header>
 			<Modal.Body className={styles["Modal-body"]}>
-				<Form onSubmit={handleSubmit}>
+				<Form>
 					<Row>
 						<Col md={4}>
 							<Form.Group controlId="nombre">
@@ -132,9 +128,8 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 								<Form.Control
 									type="text"
 									name="nombre"
-									isInvalid={errors.nombre}
 									onChange={handleChange}
-									value={formData.nombre}
+									value={data.nombre}
 								/>
 							</Form.Group>
 							<Form.Group controlId="horarioApertura">
@@ -142,9 +137,8 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 								<Form.Control
 									type="time"
 									name="horarioApertura"
-									isInvalid={errors.horarioApertura}
 									onChange={handleChange}
-									value={formData.horarioApertura}
+									value={data.horarioApertura}
 								/>
 							</Form.Group>
 							<Form.Group controlId="horarioCierre">
@@ -152,9 +146,8 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 								<Form.Control
 									type="time"
 									name="horarioCierre"
-									isInvalid={errors.horarioCierre}
 									onChange={handleChange}
-									value={formData.horarioCierre}
+									value={data.horarioCierre}
 								/>
 							</Form.Group>
 							<Form.Group
@@ -164,70 +157,85 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 								<Form.Check
 									type="checkbox"
 									label="Casa Matriz"
-									checked={formData.esCasaMatriz}
-									onChange={handleCheckChange}
+									checked={data.esCasaMatriz}
+									onChange={handleChange}
 								/>
 							</Form.Group>
 						</Col>
 
 						<Col md={4}>
 							<Form.Group controlId="pais">
-								<Form.Label>Selecciona un País</Form.Label>
+								<Form.Label>País</Form.Label>
 								<Form.Control
 									as="select"
 									name="pais"
-									value={""} //todo
-									onChange={handleChange}
+									value={data.pais}
+									onChange={(e) => {
+										const selectedPais = e.target.value;
+										handleSelectChange(e);
+										setSelectedOption(selectedPais);
+										fetchOptions(`paises`);
+									}}
 								>
-									<option></option>
-									<option value="Argentina">Argentina</option>
-									<option value="Chile">Chile</option>
-									<option value="Uruguay">Uruguay</option>
+									<option value="">Seleccione un pais</option>
+									{options.map((option) => (
+										<option
+											key={option.id}
+											value={option.id}
+										>
+											{option.name}
+										</option>
+									))}
 								</Form.Control>
 							</Form.Group>
 							<Form.Group controlId="provincia">
-								<Form.Label>Selecciona una Provincia</Form.Label>
+								<Form.Label>Provincia</Form.Label>
 								<Form.Control
 									as="select"
 									name="provincia"
-									value={""} //todo
-									onChange={handleChange}
+									value={data.provincia}
+									onChange={(e) => {
+										const selectedProvincia = e.target.value;
+										handleFormChange(e);
+										setSelectedOption(selectedProvincia);
+										fetchOptions(`provincias/findByPais/1`);
+									}}
 								>
-									<option></option>
-									<option value="Mendoza">Mendoza</option>
-									<option value="Catamarca">Catamarca</option>
-									<option value="Córdoba">Córdoba</option>
+									<option value="">Seleccione una provincia</option>
+									{options.map((option) => (
+										<option
+											key={option.id}
+											value={option.id}
+										>
+											{option.name}
+										</option>
+									))}
 								</Form.Control>
 							</Form.Group>
 							<Form.Group controlId="localidad">
 								<Form.Label>Selecciona una Localidad</Form.Label>
 								<Form.Control
-									as="select"
+									type="text"
 									name="localidad"
 									value={""} //todo
 									onChange={handleChange}
-								>
-									<option></option>
-									<option value="Tunuyan">Tunuyan</option>
-									<option value="Tupungato">Tupungato</option>
-									<option value="Guaymallen">Guaymallen</option>
-								</Form.Control>
+								/>
 							</Form.Group>
 							<Form.Group controlId="latitud">
 								<Form.Label>Latitud</Form.Label>
 								<Form.Control
-									type="text"
+									type="number"
 									name="latitud"
-									value={formData.latitud}
+									value={data.latitud}
 									onChange={handleChange}
 								/>
 							</Form.Group>
 							<Form.Group controlId="longitud">
 								<Form.Label>Longitud</Form.Label>
 								<Form.Control
-									type="text"
+									type="number"
 									name="longitud"
-									value={formData.longitud}
+									value={data.longitud}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -239,16 +247,16 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 								<Form.Control
 									type="text"
 									name="calle"
-									value={formData.domicilio.calle}
+									value={data.calle}
 									onChange={handleChange}
 								/>
 							</Form.Group>
 							<Form.Group controlId="numero">
 								<Form.Label>Número de la calle</Form.Label>
 								<Form.Control
-									type="text"
+									type="number"
 									name="numero"
-									value={formData.domicilio.numero}
+									value={data.numeroCalle}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -257,7 +265,7 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 								<Form.Control
 									type="number"
 									name="cp"
-									value={formData.domicilio.cp}
+									value={data.cp}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -266,16 +274,16 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 								<Form.Control
 									type="number"
 									name="piso"
-									value={formData.domicilio.piso}
+									value={data.piso}
 									onChange={handleChange}
 								/>
 							</Form.Group>
-							<Form.Group controlId="departamento">
+							<Form.Group controlId="nroDpto">
 								<Form.Label>Ingresa un número de departamento</Form.Label>
 								<Form.Control
 									type="number"
-									name="departamento"
-									value={formData.domicilio.nroDpto}
+									name="nroDpto"
+									value={data.nroDpto}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -283,35 +291,37 @@ const ModalCrearSucursal: FC<ModalSucursalProps> = ({ show, onHide, empresa }) =
 					</Row>
 
 					<Row>
-						<div className={styles["div-imagen"]}>
-							<Form.Group controlId="imagen">
-								<Form.Label>Ingresa la URL de la imagen</Form.Label>
-								<Form.Control
-									type="text"
-									name="logo"
-									value={formData.logo || ""}
-									onChange={handleChange}
-									isInvalid={errors.imagen}
-								/>
-							</Form.Group>
-						</div>
+						<Col>
+							<div className={styles["div-imagen"]}>
+								<Form.Group controlId="imagen">
+									<Form.Label>Ingresa la URL de la imagen</Form.Label>
+									<Form.Control
+										type="text"
+										name="logo"
+										value={data.logo || ""}
+										onChange={handleChange}
+									/>
+								</Form.Group>
+							</div>
+						</Col>
 					</Row>
-
-					<Button
-						variant="outline-warning"
-						onClick={handleClose}
-					>
-						CANCELAR
-					</Button>
-					<Button
-						type="submit"
-						variant="outline-success"
-					>
-						Enviar
-					</Button>
 				</Form>
 			</Modal.Body>
-			<Modal.Footer></Modal.Footer>
+			<Modal.Footer>
+				<Button
+					variant="outline-warning"
+					onClick={onHide}
+				>
+					CANCELAR
+				</Button>
+				<Button
+					type="button"
+					onClick={handleSubmit}
+					variant="outline-success"
+				>
+					Enviar
+				</Button>
+			</Modal.Footer>
 		</Modal>
 	);
 };

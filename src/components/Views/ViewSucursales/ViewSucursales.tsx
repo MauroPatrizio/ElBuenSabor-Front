@@ -2,7 +2,7 @@ import { RootState } from "../../../redux/store/store";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
-import { BASE_URL_SUCURSALES } from "../../../services/sucursalService";
+import { BASE_URL_SUCURSALES } from "../../../services/SucursalService";
 import SucursalCard from "../../ui/SucursalCard/SucursalCard";
 import styles from "./ViewSucursales.module.css";
 import { Button } from "react-bootstrap";
@@ -39,22 +39,39 @@ export const ViewSucursales = () => {
 		<div className={styles["div-main"]}>
 			<div className={styles["div-title"]}>
 				<h3>
-					{selectedEmpresa ? `sucursales de ${selectedEmpresa.nombre}` : "Sucursales"}
+					{selectedEmpresa ? `Sucursales de ${selectedEmpresa.nombre}` : "Sucursales"}
 				</h3>
-				<Button onClick={handleOpen}>Agregar Sucursal</Button>
+				<div style={{ margin: "1.5rem" }}>
+					{selectedEmpresa ? (
+						<Button onClick={handleOpen}>Agregar Sucursal</Button>
+					) : null}
+				</div>
 			</div>
 			<div className={styles["div-lista"]}>
-				{sucursales.length > 0 ? (
-					sucursales.map((sucursal) => (
-						<SucursalCard
-							key={sucursal.id}
-							sucursal={sucursal}
-						/>
-					))
+				{selectedEmpresa ? (
+					sucursales.length > 0 ? (
+						sucursales.map((sucursal) => (
+							<SucursalCard
+								key={sucursal.id}
+								sucursal={sucursal}
+							/>
+						))
+					) : (
+						<h3>{`No hay sucursales de ${selectedEmpresa.nombre}`} </h3>
+					)
 				) : (
-					<h3>No hay sucursales</h3>
+					<h3>Seleccione una empresa para ver sus sucursales</h3>
 				)}
 			</div>
+			{openCrearSucursal && (
+				<>
+					<ModalCrearSucursal
+						show={openCrearSucursal}
+						onHide={handleClose}
+						empresa={selectedEmpresa}
+					/>
+				</>
+			)}
 		</div>
 	);
 };
