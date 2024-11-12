@@ -31,19 +31,20 @@ const ModalCrearProducto: FC<IModalCrearProductoProps> = ({ show, onHide }) => {
   };
  
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     try {
-      await productoService.createProduct(formData);
-      Swal.fire({
-        icon: "success",
-        title: "Se añadió correctamente",
-        showCancelButton: false,
-        timer: 500,
-      });
-      onHide();
-      window.location.reload();
+        await productoService.createProduct(formData);
+        Swal.fire({
+            icon: "success",
+            title: "Se añadio correctamente",
+            showCancelButton: false,
+            timer: 500,
+        });
+
+        onHide();
+        window.location.reload();
     } catch (e) {
       console.error(e);
       
@@ -55,7 +56,7 @@ const ModalCrearProducto: FC<IModalCrearProductoProps> = ({ show, onHide }) => {
       onHide()
       
     }
-  };
+};
   return (
     <div className={style["div-main"]}>
       <Modal
@@ -68,7 +69,7 @@ const ModalCrearProducto: FC<IModalCrearProductoProps> = ({ show, onHide }) => {
           <Modal.Title>Agregar Producto</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit}>
+          <Form>
             <Form.Group controlId="denominacion">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
@@ -111,7 +112,7 @@ const ModalCrearProducto: FC<IModalCrearProductoProps> = ({ show, onHide }) => {
             <Form.Group controlId="habilitado">
               <Form.Check
                 type="checkbox"
-                label="Habilitado"
+                label="habilitado"
                 name="habilitado"
                 checked={formData.habilitado}
                 onChange={handleChange}
@@ -137,7 +138,7 @@ const ModalCrearProducto: FC<IModalCrearProductoProps> = ({ show, onHide }) => {
             <Button variant="outline-warning" onClick={onHide}>
             Cancelar
           </Button>
-          <Button variant="outline-success" type="submit">
+          <Button variant="outline-success" type="submit" onClick={handleSubmit}>
             Guardar
           </Button>
           </Form>
