@@ -148,5 +148,3 @@ const ViewAdmin: React.FC = () => {
 
 export default ViewAdmin;
 
-
-export default ViewAdmin;
