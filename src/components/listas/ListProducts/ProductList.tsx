@@ -1,6 +1,8 @@
 import  { FC, useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { IProductos } from "../../../types/dtos/productos/IProductos";
+import ModalCrearProducto from "../../modals/Producto/ModalCrearProducto/ModalCrearProducto";
+
 
 interface IListaProductsProps {
 	productos: IProductos[];
@@ -13,9 +15,20 @@ const ProductList: FC<IListaProductsProps> = ({productos}) => {
 	useEffect(() => {
 		setListaProductos(productos);
 	}, [productos]);
+    const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
+
+	const handleOpenPopUp = () => {
+		setMostrarPopUp(true);
+	};
+
+	const handleClosePopUp = () => {
+		setMostrarPopUp(false);
+	};
 
   return (
     <div>
+        <h3>PRODUCTOS</h3>
+        <button onClick={handleOpenPopUp}>Agregar Producto</button>
       <div>
     
       {listaProductos.length > 0 ? (
@@ -51,6 +64,14 @@ const ProductList: FC<IListaProductsProps> = ({productos}) => {
 )}
        
       </div>
+      {mostrarPopUp && (
+        <>
+            <ModalCrearProducto
+                show={mostrarPopUp}
+                onHide={handleClosePopUp}
+            />
+        </>
+    )}
     </div>
   );
 };
