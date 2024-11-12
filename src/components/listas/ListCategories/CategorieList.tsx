@@ -1,6 +1,7 @@
 import  { FC, useEffect, useState } from 'react'
 import { ICategorias } from '../../../types/dtos/categorias/ICategorias';
 import { Table } from 'react-bootstrap';
+import ModalCrearCategoria from '../../modals/Categoria/ModalCrearCategoria/ModalCrearCategoria';
 
 interface IListaCategoriasProps {
 	categorias: ICategorias[];
@@ -14,11 +15,21 @@ const CategorieList: FC<IListaCategoriasProps> = ({categorias}) => {
 		setListaCategorias(categorias);
 	}, [categorias]);
 
+    const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
+
+	const handleOpenPopUp = () => {
+		setMostrarPopUp(true);
+	};
+
+	const handleClosePopUp = () => {
+		setMostrarPopUp(false);
+	};
 
   return (
     <div>
+        <h3>CATEGORIAS</h3>
+        <button onClick={handleOpenPopUp}>Agregar Categoria</button>
       <div>
-    
       {listaCategorias.length > 0 ? (
     <div>
         <Table>
@@ -50,7 +61,16 @@ const CategorieList: FC<IListaCategoriasProps> = ({categorias}) => {
 )}
        
       </div>
+      {mostrarPopUp && (
+        <>
+            <ModalCrearCategoria
+                show={mostrarPopUp}
+                onHide={handleClosePopUp}
+            />
+        </>
+    )}
     </div>
+     
   )
 }
 
