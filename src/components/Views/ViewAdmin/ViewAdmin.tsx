@@ -11,9 +11,6 @@ import { categoriaService } from "../../../services/categoriaService";
 import { alergenoService } from "../../../services/alergenoService";
 import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
 import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
-import ModalCrearProducto from "../../modals/Producto/ModalCrearProducto/ModalCrearProducto";
-import ModalCrearAlergeno from "../../modals/Alergenos/ModalCrearAlergenos/ModalCrearAlergeno";
-import ModalCrearCategoria from "../../modals/Categorias/ModalCrearCategoria/ModalCrearCategoria";
 
 const ViewAdmin: React.FC = () => {
   const [productos, setProductos] = useState<IProductos[]>([]);
