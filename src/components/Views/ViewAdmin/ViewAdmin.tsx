@@ -11,9 +11,6 @@ import { categoriaService } from "../../../services/categoriaService";
 import { alergenoService } from "../../../services/alergenoService";
 import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
 import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
-import ModalCrearProducto from "../../modals/Producto/ModalCrearProducto/ModalCrearProducto";
-import ModalCrearAlergeno from "../../modals/Alergenos/ModalCrearAlergenos/ModalCrearAlergeno";
-import ModalCrearCategoria from "../../modals/Categorias/ModalCrearCategoria/ModalCrearCategoria";
 
 const ViewAdmin: React.FC = () => {
   const [productos, setProductos] = useState<IProductos[]>([]);
@@ -30,25 +27,6 @@ const ViewAdmin: React.FC = () => {
 
   const handleHomeRedirect = () => {
     navigate("/"); //VUELVE AL HOME 
-  };
-
-  // Estados para controlar la visibilidad de cada modal
-  const [showProductoModal, setShowProductoModal] = useState(false);
-  const [showCategoriaModal, setShowCategoriaModal] = useState(false);
-  const [showAlergenoModal, setShowAlergenoModal] = useState(false);
-
-  // Abre el modal según la pestaña activa
-  const handleOpenModal = () => {
-    if (activeTab === "Productos") setShowProductoModal(true);
-    else if (activeTab === "Categorias") setShowCategoriaModal(true);
-    else if (activeTab === "Alergenos") setShowAlergenoModal(true);
-  };
-
-  // Cierra los modales
-  const handleCloseModals = () => {
-    setShowProductoModal(false);
-    setShowCategoriaModal(false);
-    setShowAlergenoModal(false);
   };
 
   useEffect(() => {
@@ -81,8 +59,8 @@ const ViewAdmin: React.FC = () => {
   return (
     <div className={style.principalContainerAdmin}>
       <header>
-        <Navbar expand="lg">
-          <Container className={style.NavHeader}>
+        <Navbar className={style.NavHeader}>
+          <Container>
             <button className={style.backButton} onClick={handleHomeRedirect}>
               <span className="material-symbols-outlined">arrow_back</span>
             </button>
@@ -119,22 +97,9 @@ const ViewAdmin: React.FC = () => {
           </button>
         </div>
 
-        {/* Modales */}
-        {showProductoModal && (
-          <ModalCrearProducto show={showProductoModal} onHide={handleCloseModals} />
-        )}
-        {showCategoriaModal && (
-          <ModalCrearCategoria show={showCategoriaModal} onHide={handleCloseModals} />
-        )}
-        {showAlergenoModal && (
-          <ModalCrearAlergeno show={showAlergenoModal} onHide={handleCloseModals} />
-        )}
-
+    
         {/* Contenido de la pestaña activa */}
         <div className="content-area">
-          <h3>{activeTab.toUpperCase()}</h3>
-          <button onClick={handleOpenModal}>AGREGAR {activeTab.toUpperCase()}</button>
-
           <div>
             {activeTab === "Categorias" && <CategorieList categorias={categorias} />}
             {activeTab === "Productos" && <ProductList productos={productos} />}

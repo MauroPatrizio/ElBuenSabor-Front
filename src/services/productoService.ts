@@ -23,6 +23,12 @@ export const productoService = {
     async updateProduct (id: number, editedProducto: IProductos): Promise<IProductos>{
         const response = await axios.put<IProductos>(`${BASE_URL_PRODUCTOS}/${id}`, editedProducto)
         return response.data
+    },
+    async deleteProduct(id: number, deleteProduct: IProductos): Promise<IProductos>{
+        const response = await axios.delete<IProductos>(`${BASE_URL_PRODUCTOS}/${id}`,{
+            data: deleteProduct
+        });
+        return response.data
     }
 
 }
