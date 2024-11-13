@@ -29,7 +29,6 @@ const ViewAdmin: React.FC = () => {
     navigate("/"); //VUELVE AL HOME 
   };
 
-
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -60,8 +59,8 @@ const ViewAdmin: React.FC = () => {
   return (
     <div className={style.principalContainerAdmin}>
       <header>
-        <Navbar expand="lg">
-          <Container className={style.NavHeader}>
+        <Navbar className={style.NavHeader}>
+          <Container>
             <button className={style.backButton} onClick={handleHomeRedirect}>
               <span className="material-symbols-outlined">arrow_back</span>
             </button>
@@ -97,7 +96,8 @@ const ViewAdmin: React.FC = () => {
             Alergenos
           </button>
         </div>
-       
+
+    
         {/* Contenido de la pestaña activa */}
         <div className="content-area">
           <div>
@@ -112,3 +112,4 @@ const ViewAdmin: React.FC = () => {
 };
 
 export default ViewAdmin;
+

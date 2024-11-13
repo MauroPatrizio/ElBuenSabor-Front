@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ICreateSucursal } from "../../../types/dtos/sucursal/ICreateSucursal";
 import SucursalCard from "../../ui/SucursalCard/SucursalCard";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
@@ -14,8 +13,6 @@ export const SucursalList = () => {
 	const idEmpresa = selectedEmpresa?.id;
 
 	const [sucursales, setSucursales] = useState<ISucursal[]>([]);
-
-	const [isEmpresaSelected, setIsEmpresaSelected] = useState<boolean>(true);
 
 	useEffect(() => {
 		if (idEmpresa) {

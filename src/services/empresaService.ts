@@ -4,7 +4,7 @@ import { ICreateEmpresaDto } from "../types/dtos/empresa/ICreateEmpresaDto";
 
 export const BASE_URL_EMPRESAS = "http://190.221.207.224:8090/empresas";
 
-export const empresaService = {
+export const EmpresaService = {
 	async getEmpresaByID(id: Number): Promise<IEmpresa> {
 		const response = await axios.get<IEmpresa>(`${BASE_URL_EMPRESAS}/${id}`);
 		return response.data;

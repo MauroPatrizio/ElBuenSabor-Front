@@ -2,38 +2,43 @@ import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { sucursalService } from "../../../../services/sucursalService";
 import Swal from "sweetalert2";
 import { Button, Col, FloatingLabel, Form, Modal, Row } from "react-bootstrap";
-import { ICreateSucursal } from "../../../../types/dtos/sucursal/ICreateSucursal";
 import { IPais } from "../../../../types/IPais";
 import { IProvincia } from "../../../../types/IProvincia";
 import { ILocalidad } from "../../../../types/ILocalidad";
 import { paisService } from "../../../../services/paisService";
 import { provinciaService } from "../../../../services/provinciaService";
 import { localidadService } from "../../../../services/localidadService";
+import { IUpdateSucursal } from "../../../../types/dtos/sucursal/IUpdateSucursal";
+import { ISucursal } from "../../../../types/dtos/sucursal/ISucursal";
 
-interface IModalCrearSucursalProps {
+interface IModalEditarSucursalProps {
 	show: boolean;
 	onHide: () => void;
-	idEmpresa: number;
+	sucursal: ISucursal;
 }
 
-const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpresa }) => {
-	const [formData, setFormData] = useState<ICreateSucursal>({
-		nombre: "",
-		horarioApertura: "",
-		horarioCierre: "",
-		esCasaMatriz: false,
-		latitud: parseInt(""),
-		longitud: parseInt(""),
+const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucursal }) => {
+	const [formData, setFormData] = useState<IUpdateSucursal>({
+		nombre: sucursal.nombre,
+		idEmpresa: sucursal.empresa.id,
+		eliminado: sucursal.eliminado,
+		latitud: sucursal.latitud,
+		longitud: sucursal.longitud,
 		domicilio: {
-			calle: "",
-			numero: parseInt(""),
-			cp: parseInt(""),
-			piso: parseInt(""),
-			nroDpto: parseInt(""),
-			idLocalidad: parseInt(""),
+			id: sucursal.domicilio.id,
+			calle: sucursal.domicilio.calle,
+			numero: sucursal.domicilio.numero,
+			cp: sucursal.domicilio.cp,
+			piso: sucursal.domicilio.piso,
+			nroDpto: sucursal.domicilio.nroDpto,
+			idLocalidad: sucursal.domicilio.localidad.id,
 		},
-		idEmpresa: idEmpresa,
-		logo: "",
+		logo: sucursal.logo || "",
+		categorias: sucursal.categorias || [],
+		esCasaMatriz: sucursal.esCasaMatriz || false,
+		horarioApertura: sucursal.horarioApertura || "",
+		horarioCierre: sucursal.horarioCierre || "",
+		id: sucursal.id,
 	});
 
 	const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
@@ -51,8 +56,8 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 		return errors;
 	};
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value, type, checked } = e.target;
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const { name, value, type } = e.target;
 
 		setFormData((prev) => {
 			if (name in prev.domicilio) {
@@ -60,14 +65,13 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 					...prev,
 					domicilio: {
 						...prev.domicilio,
-						[name]: type === "number" ? parseInt(value) : value,
+						[name]: type === "number" ? (value === "" ? "" : parseInt(value)) : value,
 					},
 				};
 			}
 			return {
 				...prev,
-				[name]:
-					type === "checkbox" ? checked : type === "number" ? parseFloat(value) : value,
+				[name]: type === "number" ? (value === "" ? "" : parseFloat(value)) : value,
 			};
 		});
 
@@ -83,8 +87,6 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
-		setFormErrors({});
-
 		const errors = formValidar();
 
 		if (Object.keys(errors).length > 0) {
@@ -93,24 +95,21 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 		}
 
 		try {
-			await sucursalService.createSucursal(formData);
+			await sucursalService.updateSucursal(formData.id, formData);
 
 			Swal.fire({
 				icon: "success",
-				title: "Sucursal Creada",
+				title: "Sucursal Actualizada",
 				showCancelButton: false,
 				timer: 1800,
 				didClose: () => {
 					window.location.reload();
 				},
 			});
-
-			setFormErrors({});
 		} catch (e) {
-			console.error(e);
 			Swal.fire({
 				icon: "error",
-				title: "No se pudo cargar la sucursal",
+				title: "No se pudo actualizar la sucursal",
 				showCloseButton: true,
 			});
 		}
@@ -120,9 +119,13 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 	const [provincias, setProvincias] = useState<IProvincia[]>([]);
 	const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
-	const [selectedPais, setSelectedPais] = useState<string>("");
-	const [selectedProvincia, setSelectedProvincia] = useState<string>("");
-	const [selectedLocalidad, setSelectedLocalidad] = useState<string>("");
+	const [selectedPais, setSelectedPais] = useState(
+		sucursal.domicilio.localidad.provincia.pais.id
+	);
+	const [selectedProvincia, setSelectedProvincia] = useState(
+		sucursal.domicilio.localidad.provincia.id
+	);
+	const [selectedLocalidad, setSelectedLocalidad] = useState(sucursal.domicilio.localidad.id);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -152,9 +155,9 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 
 	const handleChangePais = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
 		const selectedValue = e.target.value;
-		setSelectedPais(selectedValue);
-		setSelectedProvincia("");
-		setSelectedLocalidad("");
+		setSelectedPais(parseInt(selectedValue));
+		setSelectedProvincia(parseInt(""));
+		setSelectedLocalidad(parseInt(""));
 
 		setFormErrors((prevErrors) => {
 			const { pais, ...restErrors } = prevErrors;
@@ -164,8 +167,8 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 
 	const handleChangeProvincia = (e: ChangeEvent<HTMLSelectElement>) => {
 		const selectedValue = e.target.value;
-		setSelectedProvincia(selectedValue);
-		setSelectedLocalidad("");
+		setSelectedProvincia(parseInt(selectedValue));
+		setSelectedLocalidad(parseInt(""));
 
 		setFormErrors((prevErrors) => {
 			const { provincia, ...restErrors } = prevErrors;
@@ -177,8 +180,9 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 
 	const handleChangeLocalidad = (e: ChangeEvent<HTMLSelectElement>) => {
 		const selectedValue = e.target.value;
+
 		const idLocalidad = parseInt(selectedValue);
-		setSelectedLocalidad(selectedValue);
+		setSelectedLocalidad(parseInt(selectedValue));
 
 		setFormData((prev) => ({
 			...prev,
@@ -206,7 +210,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 			backdrop="static"
 		>
 			<Modal.Header closeButton>
-				<Modal.Title>Crear Sucursal</Modal.Title>
+				<Modal.Title>Editar Sucursal</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Form>
@@ -214,7 +218,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 						<Col md={4}>
 							<Form.Group
 								controlId="nombre"
-								className="mb-3"
+								className="mb-3 "
 							>
 								<FloatingLabel
 									controlId="floatingInput"
@@ -516,4 +520,4 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 	);
 };
 
-export default ModalCrearSucursal;
+export default ModalEditarSucursal;
