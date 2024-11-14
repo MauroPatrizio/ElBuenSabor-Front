@@ -10,6 +10,8 @@
 	align-items: center;
 	justify-items: center;
 	background-color: lightgrey;
+	overflow-y: hidden;
+	
 }
 
 .div-sucursales {
@@ -18,4 +20,5 @@
 	align-items: center;
 	justify-items: center;
 	background-color: whitesmoke;
+	overflow-y: hidden;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
-import { EmpresaService } from "../../../services/EmpresaService";
+import { EmpresaService } from "../../../services/empresaService";
 import style from "./ViewEmpresas.module.css";
 import { ModalCrearEmpresa } from "../../modals/Empresa/ModalCrearEmpresa/ModalCrearEmpresa";
 import { ListaEmpresas } from "../../listas/ListaEmpresas/ListaEmpresas";
