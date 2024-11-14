@@ -27,7 +27,10 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 	};
 
 	function conversorTiempo(time: string): string {
-		return time.slice(0, 5);
+		if (time) {
+			return time.slice(0, 5);
+		}
+		return "";
 	}
 
 	return (
