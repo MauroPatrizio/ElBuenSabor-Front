@@ -26,16 +26,21 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 		navigate("/admin", { state: { branchName: nombre } }); // Ajusta la ruta si necesitas parámetros adicionales y envia el nombre de la sucursal
 	};
 
+	function conversorTiempo(time: string): string {
+		return time.slice(0, 5);
+	}
+
 	return (
 		<div className={styles["div-card"]}>
 			<Card className={styles["card-main"]}>
 				<Card.Body className={styles["card-body"]}>
 					<Card.Title>{sucursal.nombre}</Card.Title>
 					<Card.Text>
-						Apertura: {sucursal.horarioApertura} - {sucursal.horarioCierre} <br />
+						Horario: {conversorTiempo(sucursal.horarioApertura)} {" - "}
+						{conversorTiempo(sucursal.horarioCierre)} <br />
 					</Card.Text>
 					<Card.Img
-						style={{ maxHeight: "15rem", maxWidth: "14.9rem" }}
+						style={{ maxHeight: "15rem", maxWidth: "15rem" }}
 						variant="top"
 						src={sucursal.logo || ""}
 					/>
