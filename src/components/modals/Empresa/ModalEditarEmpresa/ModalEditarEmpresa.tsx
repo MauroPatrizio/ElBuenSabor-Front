@@ -3,7 +3,7 @@ import { IUpdateEmpresaDto } from "../../../../types/dtos/empresa/IUpdateEmpresa
 import { Button, Form, Modal } from "react-bootstrap";
 import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
 import Swal from "sweetalert2";
-import { BASE_URL_EMPRESAS } from "../../../../services/EmpresaService";
+import { BASE_URL_EMPRESAS } from "../../../../services/empresaService";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../redux/store/store";
 import { toggleGlobalStyle } from "../../../../redux/slices/globalStylesSlice";
