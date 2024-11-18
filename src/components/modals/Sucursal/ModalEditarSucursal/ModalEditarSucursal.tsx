@@ -200,10 +200,20 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 		});
 	};
 
+	const [dataInicial] = useState<IUpdateSucursal>(formData);
+
+	const resetForm = () => {
+		setFormData(dataInicial);
+	};
+
+	const handleClose = () => {
+		onHide(), resetForm();
+	};
+
 	return (
 		<Modal
 			show={show}
-			onHide={onHide}
+			onHide={handleClose}
 			aria-labelledby="modal-title"
 			size="xl"
 			centered
@@ -504,7 +514,7 @@ const ModalEditarSucursal: FC<IModalEditarSucursalProps> = ({ show, onHide, sucu
 			<Modal.Footer>
 				<Button
 					variant="outline-warning"
-					onClick={onHide}
+					onClick={handleClose}
 				>
 					CANCELAR
 				</Button>
