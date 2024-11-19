@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
 import { Button, Modal } from "react-bootstrap";
-import styles from "./ModalVerEmpresa.module.css";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../redux/store/store";
 import { toggleGlobalStyle } from "../../../../redux/slices/globalStylesSlice";
@@ -34,20 +33,33 @@ export const ModalVerEmpresa: FC<IModalVerEmpresaProps> = ({ empresa, show, onHi
 				onHide={onHide}
 				centered
 				backdrop="static"
-				className={styles["modal"]}
 			>
-				<Modal.Header
-					className={styles["modal-header"]}
-					closeButton
-				>
-					<Modal.Title className={styles["modal-title"]}>{empresa.nombre}</Modal.Title>
+				<Modal.Header closeButton>
+					<Modal.Title>{empresa.nombre}</Modal.Title>
 				</Modal.Header>
-				<Modal.Body className={styles["modal-body"]}>
-					<p>Razon Social: {empresa.razonSocial} </p>
-					<p>CUIT: {empresa.cuit} </p>
-					<p>Imagen: {empresa.logo} </p>
+				<Modal.Body>
+					<p>
+						<b>Razon Social:</b> {empresa.razonSocial}{" "}
+					</p>
+					<p>
+						<b>CUIT:</b> {empresa.cuit}{" "}
+					</p>
+					<div style={{ overflow: "auto" }}>
+						<p style={{ overflowWrap: "break-word" }}>
+							<b>Imagen:</b> {empresa.logo}{" "}
+						</p>
+					</div>
+
+					<div className="d-flex justify-content-center align-items-center">
+						{empresa.logo ? (
+							<img
+								src={empresa.logo || ""}
+								style={{ maxWidth: "15rem", height: "15rem" }}
+							/>
+						) : null}
+					</div>
 				</Modal.Body>
-				<Modal.Footer className={styles["modal-footer"]}>
+				<Modal.Footer>
 					<Button onClick={onHide}>Cerrar</Button>
 				</Modal.Footer>
 			</Modal>
