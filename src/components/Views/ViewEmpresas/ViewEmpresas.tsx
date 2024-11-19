@@ -29,10 +29,13 @@ export const ViewEmpresas = () => {
 	return (
 		<div>
 			<div className={style.containerEmpresa}>
-				<h3>Empresa</h3>
+				<h3 style={{ color: "#2F4156" }}>
+					<b>EMPRESAS</b>
+				</h3>
 				<Button
 					variant="primary"
 					onClick={handleOpenPopUp}
+					style={{ backgroundColor: "#567C8D", borderColor: "#567C8D" }}
 				>
 					Agregar empresa
 				</Button>

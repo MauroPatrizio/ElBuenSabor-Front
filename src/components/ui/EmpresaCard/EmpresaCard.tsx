@@ -35,15 +35,22 @@ const EmpresaCard: React.FC<EmpresaCardProps> = ({ dato }) => {
 				className={style["card-container"]}
 				onClick={handleSelectEmpresa}
 			>
-				<Card.Header>
-					<Card.Title className="d-flex justify-content-center text-center">
-						{dato.nombre}
+				<Card.Header style={{ overflow: "auto" }}>
+					<Card.Title
+						className="d-flex justify-content-center text-center"
+						style={{ overflowWrap: "anywhere" }}
+					>
+						{dato.nombre.toUpperCase()}
 					</Card.Title>
 				</Card.Header>
 				<Card.Body className={style["card-body"]}>
 					<Card.Img
-						src={dato.logo ? dato.logo : ""}
-						style={{ maxWidth: "14.9rem", maxHeight: "14.5rem" }}
+						src={
+							dato.logo
+								? dato.logo
+								: "https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
+						}
+						style={{ width: "14rem", height: "14rem" }}
 					></Card.Img>
 					<div className={style["button-ontainer"]}>
 						{/* Boton Ver */}

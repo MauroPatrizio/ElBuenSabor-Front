@@ -1,12 +1,16 @@
 .card-container {
-	width: 15rem;
-	border: 1px solid grey;
+	width: 16rem;
+	height: 95%;
+	border: 1px solid black;
 	cursor: pointer;
 	margin: 1.5rem;
+	transition: transform 0.3 ease;
+	margin: 1rem;
 }
-.card-ontainer:hover {
-	border: 1px solid rgb(0, 0, 0);
+.card-container:hover {
+	transform: scale(1.01);
 }
+
 .card-body {
 	display: flex;
 	flex-direction: column;

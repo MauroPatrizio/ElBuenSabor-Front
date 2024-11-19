@@ -38,12 +38,21 @@ export const ViewSucursales = () => {
 	return (
 		<div className={styles["div-main"]}>
 			<div className={styles["div-title"]}>
-				<h3>
-					{selectedEmpresa ? `Sucursales de ${selectedEmpresa.nombre}` : "Sucursales"}
+				<h3 style={{ color: "#2F4156" }}>
+					<b>
+						{selectedEmpresa
+							? `Sucursales de ${selectedEmpresa.nombre}`.toUpperCase()
+							: "SUCURSALES"}
+					</b>
 				</h3>
 				<div style={{ margin: "1.5rem" }}>
 					{selectedEmpresa ? (
-						<Button onClick={handleOpen}>Agregar Sucursal</Button>
+						<Button
+							onClick={handleOpen}
+							style={{ backgroundColor: "#567C8D", borderColor: "#567C8D" }}
+						>
+							Agregar Sucursal
+						</Button>
 					) : null}
 				</div>
 			</div>

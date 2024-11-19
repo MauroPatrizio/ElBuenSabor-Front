@@ -17,8 +17,16 @@ export const ModalVerEmpresa: FC<IModalVerEmpresaProps> = ({ empresa, show, onHi
 				centered
 				backdrop="static"
 			>
-				<Modal.Header closeButton>
-					<Modal.Title>{empresa.nombre}</Modal.Title>
+				<Modal.Header
+					closeButton
+					style={{ backgroundColor: "#567C8D", color: "#fff" }}
+				>
+					<Modal.Title
+						className="text-center w-100"
+						style={{ fontSize: "1.5rem" }}
+					>
+						{empresa.nombre}
+					</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<p>
@@ -28,7 +36,7 @@ export const ModalVerEmpresa: FC<IModalVerEmpresaProps> = ({ empresa, show, onHi
 						<b>CUIT:</b> {empresa.cuit}{" "}
 					</p>
 					<div style={{ overflow: "auto" }}>
-						<p style={{ overflowWrap: "break-word" }}>
+						<p style={{ overflowWrap: "anywhere" }}>
 							<b>Imagen:</b> {empresa.logo}{" "}
 						</p>
 					</div>

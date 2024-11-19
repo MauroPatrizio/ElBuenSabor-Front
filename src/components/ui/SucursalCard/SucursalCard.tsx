@@ -36,8 +36,15 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 	return (
 		<div className={styles["div-card"]}>
 			<Card className={styles["card-main"]}>
+				<Card.Header style={{ overflow: "auto" }}>
+					<Card.Title
+						className="d-flex justify-content-center text-center"
+						style={{ overflowWrap: "anywhere" }}
+					>
+						{sucursal.nombre.toUpperCase()}
+					</Card.Title>
+				</Card.Header>
 				<Card.Body className={styles["card-body"]}>
-					<Card.Title>{sucursal.nombre}</Card.Title>
 					<Card.Text>
 						Horario: {conversorTiempo(sucursal.horarioApertura)} {" - "}
 						{conversorTiempo(sucursal.horarioCierre)} <br />
@@ -45,7 +52,10 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 					<Card.Img
 						style={{ maxHeight: "15rem", maxWidth: "15rem" }}
 						variant="top"
-						src={sucursal.logo || ""}
+						src={
+							sucursal.logo ||
+							"https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
+						}
 					/>
 					<div className={styles["buttons"]}>
 						{/* botón de administración */}
