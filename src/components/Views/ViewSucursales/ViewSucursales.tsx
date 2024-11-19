@@ -6,7 +6,7 @@ import { BASE_URL_SUCURSALES } from "../../../services/sucursalService";
 import SucursalCard from "../../ui/SucursalCard/SucursalCard";
 import styles from "./ViewSucursales.module.css";
 import { Button } from "react-bootstrap";
-import ModalCrearSucursal from "../../modals/Sucursal/ModalCrearSucursal/ModalCrearSucursal";
+import ModalCrearEditarSucursal from "../../modals/Sucursal/ModalCrearSucursal/ModalCrearEditarSucursal";
 
 export const ViewSucursales = () => {
 	const selectedEmpresa = useSelector((state: RootState) => state.empresa.selectedEmpresa);
@@ -65,7 +65,7 @@ export const ViewSucursales = () => {
 			</div>
 			{openCrearSucursal && (
 				<>
-					<ModalCrearSucursal
+					<ModalCrearEditarSucursal
 						show={openCrearSucursal}
 						onHide={handleClose}
 						idEmpresa={selectedEmpresa?.id ?? 0}

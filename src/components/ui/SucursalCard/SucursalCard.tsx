@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"; // Importa el hook useNavigate
 import styles from "./SucursalCard.module.css";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import { ModalVerSucursal } from "../../modals/Sucursal/ModalVerSucursal/ModalVerSucursal";
-import ModalEditarSucursal from "../../modals/Sucursal/ModalEditarSucursal/ModalEditarSucursal";
+import ModalCrearEditarSucursal from "../../modals/Sucursal/ModalCrearSucursal/ModalCrearEditarSucursal";
 
 interface SucursalCardProps {
 	sucursal: ISucursal;
@@ -73,10 +73,11 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 				</Card.Body>
 			</Card>
 			{/* Modal Edit */}
-			<ModalEditarSucursal
+			<ModalCrearEditarSucursal
 				show={editOpen}
 				onHide={handleEditClose}
 				sucursal={sucursal}
+				idEmpresa={sucursal.empresa.id}
 			/>
 
 			{/* Modal View */}

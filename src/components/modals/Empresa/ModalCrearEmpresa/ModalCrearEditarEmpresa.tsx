@@ -6,13 +6,17 @@ import Swal from "sweetalert2";
 import { IUpdateEmpresaDto } from "../../../../types/dtos/empresa/IUpdateEmpresaDto";
 import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
 
-interface IModalCrearEmpresaProps {
+interface IModalCrearEditarEmpresaProps {
 	show: boolean;
 	onHide: () => void;
 	empresa?: IEmpresa;
 }
 
-export const ModalCrearEditarEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide, empresa }) => {
+export const ModalCrearEditarEmpresa: FC<IModalCrearEditarEmpresaProps> = ({
+	show,
+	onHide,
+	empresa,
+}) => {
 	const [formData, setFormData] = useState<ICreateEmpresaDto | IUpdateEmpresaDto>({
 		nombre: empresa?.nombre || "",
 		razonSocial: empresa?.razonSocial || "",
@@ -21,15 +25,6 @@ export const ModalCrearEditarEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onH
 		id: empresa?.id,
 	});
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-
-		setFormData((prev) => ({
-			...prev,
-			[name]: name === "cuit" ? parseInt(value) || 0 : value,
-		}));
-	};
-
 	const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
 	const formValidar = () => {
@@ -37,10 +32,31 @@ export const ModalCrearEditarEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onH
 
 		if (!formData.nombre) errors.nombre = "Campo obligatorio.";
 		if (!formData.razonSocial) errors.razonSocial = "Campo obligatorio.";
-		if (!formData.cuit) errors.cuit = "Campo obligatorio.";
+		if (!formData.cuit) {
+			errors.cuit = "Campo obligarorio";
+		} else if (formData.cuit.toString().length !== 11) {
+			errors.cuit = "El CUIT debe tener 11 números";
+		}
 		if (!formData.logo) errors.logo = "Campo obligatorio";
 
 		return errors;
+	};
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+
+		setFormData((prev) => ({
+			...prev,
+			[name]: name === "cuit" ? parseInt(value) || 0 : value,
+		}));
+
+		setFormErrors((prevErrors) => {
+			if (value.trim() !== "") {
+				const { [name]: removedError, ...restErrors } = prevErrors;
+				return restErrors;
+			}
+			return prevErrors;
+		});
 	};
 
 	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
