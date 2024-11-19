@@ -3,9 +3,8 @@
 	height: 95%;
 	border: 1px solid black;
 	cursor: pointer;
-	margin: 1.5rem;
-	transition: transform 0.3 ease;
 	margin: 1rem;
+	transition: transform 0.3 ease;
 }
 .card-container:hover {
 	transform: scale(1.01);

@@ -1,11 +1,11 @@
 .card-main {
 	width: 16rem;
 	height: 95%;
-	transition: transform 0.3s ease;
 	border: 1px solid black;
 	border-radius: 0.4rem;
 	transition: transform 0.3 ease;
 	margin: 1rem;
+	cursor: pointer;
 }
 
 .card-main:hover {
