@@ -3,7 +3,7 @@ import { ISucursal } from "../types/dtos/sucursal/ISucursal";
 import { ICreateSucursal } from "../types/dtos/sucursal/ICreateSucursal";
 import { IUpdateSucursal } from "../types/dtos/sucursal/IUpdateSucursal";
 
-export const BASE_URL_SUCURSALES = "http://190.221.207.224:8090/sucursales";
+const BASE_URL_SUCURSALES = "http://190.221.207.224:8090/sucursales";
 
 export const sucursalService = {
 	async getSucursalByID(id: Number): Promise<ISucursal> {
@@ -11,8 +11,8 @@ export const sucursalService = {
 		return response.data;
 	},
 
-	async getAllSucursales(): Promise<ISucursal[]> {
-		const response = await axios.get<ISucursal[]>(BASE_URL_SUCURSALES);
+	async getAllSucursales(id: Number): Promise<ISucursal[]> {
+		const response = await axios.get<ISucursal[]>(`${BASE_URL_SUCURSALES}/porEmpresa/${id}`);
 		return response.data;
 	},
 
