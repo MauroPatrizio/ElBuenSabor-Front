@@ -1,8 +1,6 @@
 import { RootState } from "../../../redux/store/store";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
-import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
-import SucursalCard from "../../ui/SucursalCard/SucursalCard";
 import styles from "./ViewSucursales.module.css";
 import { Button } from "react-bootstrap";
 import ModalCrearEditarSucursal from "../../modals/Sucursal/ModalCrearSucursal/ModalCrearEditarSucursal";
@@ -10,10 +8,6 @@ import { SucursalList } from "../../listas/SucursalList/SucursalList";
 
 export const ViewSucursales = () => {
 	const selectedEmpresa = useSelector((state: RootState) => state.empresa.selectedEmpresa);
-
-	const idEmpresa = selectedEmpresa?.id;
-
-	const [sucursales, setSucursales] = useState<ISucursal[]>([]);
 
 	const [openCrearSucursal, setOpenCrearSucursal] = useState(false);
 
