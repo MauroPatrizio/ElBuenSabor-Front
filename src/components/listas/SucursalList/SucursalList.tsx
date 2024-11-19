@@ -24,18 +24,22 @@ export const SucursalList = () => {
 	return (
 		<div className={styles["div-main"]}>
 			<div className={styles["div-lista"]}>
-				{sucursales.length > 0 ? (
-					sucursales.map(
-						(sucursal) => (
-							<SucursalCard
-								key={sucursal.id}
-								sucursal={sucursal}
-							/>
-						),
-						console.log(sucursales)
+				{selectedEmpresa ? (
+					sucursales.length > 0 ? (
+						sucursales.map(
+							(sucursal) => (
+								<SucursalCard
+									key={sucursal.id}
+									sucursal={sucursal}
+								/>
+							),
+							console.log(sucursales)
+						)
+					) : (
+						<h3>{`La empresa ${selectedEmpresa?.nombre} no tiene sucursales en este momento`}</h3>
 					)
 				) : (
-					<h3>{`La empresa ${selectedEmpresa?.nombre} no tiene sucursales en este momento`}</h3>
+					<h3>Seleccione una empresa para ver sus sucursales</h3>
 				)}
 			</div>
 		</div>
