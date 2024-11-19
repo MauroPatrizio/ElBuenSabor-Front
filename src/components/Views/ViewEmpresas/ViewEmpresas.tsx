@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 import { EmpresaService } from "../../../services/empresaService";
 import style from "./ViewEmpresas.module.css";
-import { ModalCrearEmpresa } from "../../modals/Empresa/ModalCrearEmpresa/ModalCrearEmpresa";
+import { ModalCrearEditarEmpresa } from "../../modals/Empresa/ModalCrearEmpresa/ModalCrearEditarEmpresa";
 import { ListaEmpresas } from "../../listas/ListaEmpresas/ListaEmpresas";
 import { Button } from "react-bootstrap";
 
@@ -42,7 +42,7 @@ export const ViewEmpresas = () => {
 			</div>
 			{mostrarPopUp && (
 				<>
-					<ModalCrearEmpresa
+					<ModalCrearEditarEmpresa
 						show={mostrarPopUp}
 						onHide={handleClosePopUp}
 					/>

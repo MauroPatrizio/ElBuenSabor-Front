@@ -1,9 +1,6 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
 import { Button, Modal } from "react-bootstrap";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../../redux/store/store";
-import { toggleGlobalStyle } from "../../../../redux/slices/globalStylesSlice";
 
 interface IModalVerEmpresaProps {
 	empresa: IEmpresa;
@@ -12,20 +9,6 @@ interface IModalVerEmpresaProps {
 }
 
 export const ModalVerEmpresa: FC<IModalVerEmpresaProps> = ({ empresa, show, onHide }) => {
-	const dispatch = useDispatch<AppDispatch>();
-
-	useEffect(() => {
-		if (show) {
-			dispatch(toggleGlobalStyle(true));
-		} else {
-			dispatch(toggleGlobalStyle(false));
-		}
-
-		return () => {
-			dispatch(toggleGlobalStyle(false));
-		};
-	}, [show, dispatch]);
-
 	return (
 		<>
 			<Modal

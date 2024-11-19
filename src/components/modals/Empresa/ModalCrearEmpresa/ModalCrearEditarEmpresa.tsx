@@ -1,11 +1,8 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import { ICreateEmpresaDto } from "../../../../types/dtos/empresa/ICreateEmpresaDto";
 import { Button, Form, Modal } from "react-bootstrap";
 import { EmpresaService } from "../../../../services/empresaService";
 import Swal from "sweetalert2";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../../redux/store/store";
-import { toggleGlobalStyle } from "../../../../redux/slices/globalStylesSlice";
 import { IUpdateEmpresaDto } from "../../../../types/dtos/empresa/IUpdateEmpresaDto";
 import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
 
@@ -15,7 +12,7 @@ interface IModalCrearEmpresaProps {
 	empresa?: IEmpresa;
 }
 
-export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide, empresa }) => {
+export const ModalCrearEditarEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide, empresa }) => {
 	const [formData, setFormData] = useState<ICreateEmpresaDto | IUpdateEmpresaDto>({
 		nombre: empresa?.nombre || "",
 		razonSocial: empresa?.razonSocial || "",
@@ -26,6 +23,7 @@ export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide, e
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
+
 		setFormData((prev) => ({
 			...prev,
 			[name]: name === "cuit" ? parseInt(value) || 0 : value,
@@ -89,20 +87,6 @@ export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide, e
 			});
 		}
 	};
-
-	const dispatch = useDispatch<AppDispatch>();
-
-	useEffect(() => {
-		if (show) {
-			dispatch(toggleGlobalStyle(true));
-		} else {
-			dispatch(toggleGlobalStyle(false));
-		}
-
-		return () => {
-			dispatch(toggleGlobalStyle(false));
-		};
-	}, [show, dispatch]);
 
 	return (
 		<div>
