@@ -99,7 +99,7 @@ const ModalCrearSucursal: FC<IModalCrearSucursalProps> = ({ show, onHide, idEmpr
 				icon: "success",
 				title: "Sucursal Creada",
 				showCancelButton: false,
-				timer: 1800,
+				timer: 1000,
 				didClose: () => {
 					window.location.reload();
 				},

@@ -1,61 +1,92 @@
 import React, { FC, useEffect, useState } from "react";
 import { ICreateEmpresaDto } from "../../../../types/dtos/empresa/ICreateEmpresaDto";
 import { Button, Form, Modal } from "react-bootstrap";
-import { EmpresaService } from "../../../../services/EmpresaService";
+import { EmpresaService } from "../../../../services/empresaService";
 import Swal from "sweetalert2";
-import styles from "./ModalCrearEmpresa.module.css";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../redux/store/store";
 import { toggleGlobalStyle } from "../../../../redux/slices/globalStylesSlice";
+import { IUpdateEmpresaDto } from "../../../../types/dtos/empresa/IUpdateEmpresaDto";
+import { IEmpresa } from "../../../../types/dtos/empresa/IEmpresa";
 
 interface IModalCrearEmpresaProps {
 	show: boolean;
 	onHide: () => void;
+	empresa?: IEmpresa;
 }
 
-export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide }) => {
-	const [formData, setFormData] = useState<ICreateEmpresaDto>({
-		nombre: "",
-		razonSocial: "",
-		cuit: 0,
-		logo: "",
+export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide, empresa }) => {
+	const [formData, setFormData] = useState<ICreateEmpresaDto | IUpdateEmpresaDto>({
+		nombre: empresa?.nombre || "",
+		razonSocial: empresa?.razonSocial || "",
+		cuit: empresa?.cuit || parseInt(""),
+		logo: empresa?.logo || "",
+		id: empresa?.id,
 	});
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: name === "cuit" ? parseInt(value) || 0 : value,
 		}));
+	};
+
+	const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+	const formValidar = () => {
+		const errors: { [key: string]: string } = {};
+
+		if (!formData.nombre) errors.nombre = "Campo obligatorio.";
+		if (!formData.razonSocial) errors.razonSocial = "Campo obligatorio.";
+		if (!formData.cuit) errors.cuit = "Campo obligatorio.";
+		if (!formData.logo) errors.logo = "Campo obligatorio";
+
+		return errors;
 	};
 
 	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
-		const isDataComplete = Object.values(formData).every(
-			(value) => value !== "" && value !== null && value !== undefined
-		);
+		setFormErrors({});
 
-		if (!isDataComplete) {
-			Swal.fire({
-				icon: "warning",
-				title: "Rellene todos los campos",
-				showCancelButton: true,
-			});
+		const errors = formValidar();
+
+		if (Object.keys(errors).length > 0) {
+			setFormErrors(errors);
+			return;
 		}
 
 		try {
-			await EmpresaService.createEmpresa(formData);
-			Swal.fire({
-				icon: "success",
-				title: "Se añadio correctamente",
-				showCancelButton: false,
-				timer: 500,
-			});
+			if (empresa) {
+				//Edit
+				await EmpresaService.updateEmpresa(empresa.id, formData as IUpdateEmpresaDto);
+
+				Swal.fire({
+					icon: "success",
+					title: "Empresa actualizada",
+					showConfirmButton: false,
+					timer: 1200,
+				});
+			} else {
+				//Create
+				await EmpresaService.createEmpresa(formData as ICreateEmpresaDto);
+
+				Swal.fire({
+					icon: "success",
+					title: "Empresa creada",
+					showConfirmButton: false,
+					timer: 1200,
+				});
+			}
 			onHide();
 			window.location.reload();
 		} catch (e) {
 			console.error(e);
+			Swal.fire({
+				icon: "error",
+				title: "No se pudo guardar la empresa",
+			});
 		}
 	};
 
@@ -74,67 +105,63 @@ export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide })
 	}, [show, dispatch]);
 
 	return (
-		<div className={styles["div-main"]}>
+		<div>
 			<Modal
 				show={show}
 				onHide={onHide}
-				className={styles["modal"]}
 				backdrop="static"
 				centered
 			>
-				<Modal.Header
-					closeButton
-					className={styles["modal-header"]}
-				>
-					<Modal.Title className={styles["modal-title"]}>Agregar Empresa</Modal.Title>
+				<Modal.Header closeButton>
+					<Modal.Title>{empresa ? "Editar empresa" : "Agregar Empresa"}</Modal.Title>
 				</Modal.Header>
-				<Modal.Body className={styles["modal-body"]}>
+				<Modal.Body>
 					<Form>
-						<Form.Group
-							controlId="nombre"
-							className={styles["form-group"]}
-						>
+						<Form.Group controlId="nombre">
 							<Form.Label>Nombre</Form.Label>
 							<Form.Control
 								type="text"
 								name="nombre"
 								value={formData.nombre}
 								onChange={handleChange}
-								className={styles["form-control"]}
+								isInvalid={!!formErrors.nombre}
 							/>
+							<Form.Control.Feedback type="invalid">
+								{formErrors.nombre}
+							</Form.Control.Feedback>
 						</Form.Group>
 
-						<Form.Group
-							controlId="razonSocial"
-							className={styles["form-group"]}
-						>
+						<Form.Group controlId="razonSocial">
 							<Form.Label>Razon Social</Form.Label>
 							<Form.Control
 								type="text"
 								name="razonSocial"
 								value={formData.razonSocial}
 								onChange={handleChange}
-								className={styles["form-control"]}
+								isInvalid={!!formErrors.razonSocial}
 							/>
+							<Form.Control.Feedback type="invalid">
+								{formErrors.razonSocial}
+							</Form.Control.Feedback>
 						</Form.Group>
 
-						<Form.Group
-							controlId="cuit"
-							className={styles["form-group"]}
-						>
+						<Form.Group controlId="cuit">
 							<Form.Label>CUIT</Form.Label>
 							<Form.Control
 								type="number"
 								name="cuit"
 								value={formData.cuit}
 								onChange={handleChange}
-								className={styles["form-control"]}
+								isInvalid={!!formErrors.cuit}
 							/>
+							<Form.Control.Feedback type="invalid">
+								{formErrors.cuit}
+							</Form.Control.Feedback>
 						</Form.Group>
 
 						<Form.Group
 							controlId="logo"
-							className={styles["form-group"]}
+							className="w-100"
 						>
 							<Form.Label>Logo</Form.Label>
 							<Form.Control
@@ -142,12 +169,21 @@ export const ModalCrearEmpresa: FC<IModalCrearEmpresaProps> = ({ show, onHide })
 								name="logo"
 								value={formData.logo || ""}
 								onChange={handleChange}
-								className={styles["form-control"]}
+								isInvalid={!!formErrors.logo}
+							/>
+							<Form.Control.Feedback type="invalid">
+								{formErrors.logo}
+							</Form.Control.Feedback>
+						</Form.Group>
+						<Form.Group className="d-flex justify-content-center align-items-center">
+							<img
+								src={formData.logo || ""}
+								style={{ maxWidth: "15rem", height: "auto" }}
 							/>
 						</Form.Group>
 					</Form>
 				</Modal.Body>
-				<Modal.Footer className={styles["modal-footer"]}>
+				<Modal.Footer>
 					<Button
 						variant="outline-warning"
 						onClick={onHide}

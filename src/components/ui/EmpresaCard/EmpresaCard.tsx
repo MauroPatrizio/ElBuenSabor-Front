@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setSelectedEmpresa } from "../../../redux/slices/empresaSlice";
 import { ModalVerEmpresa } from "../../modals/Empresa/ModalVerEmpresa/ModalVerEmpresa";
-import { ModalEditarEmpresa } from "../../modals/Empresa/ModalEditarEmpresa/ModalEditarEmpresa";
+import { ModalCrearEmpresa } from "../../modals/Empresa/ModalCrearEmpresa/ModalCrearEmpresa";
 
 interface EmpresaCardProps {
 	dato: IEmpresa;
@@ -77,7 +77,7 @@ const EmpresaCard: React.FC<EmpresaCardProps> = ({ dato }) => {
 			{/* Modal Editar */}
 			{openEditModal && (
 				<div>
-					<ModalEditarEmpresa
+					<ModalCrearEmpresa
 						empresa={dato}
 						show={openEditModal}
 						onHide={handleCloseEditModal}
