@@ -22,7 +22,7 @@ export const SucursalList = () => {
 	}, [idEmpresa]);
 
 	return (
-		<div>
+		<div className={styles["div-main"]}>
 			<div className={styles["div-lista"]}>
 				{sucursales.length > 0 ? (
 					sucursales.map(

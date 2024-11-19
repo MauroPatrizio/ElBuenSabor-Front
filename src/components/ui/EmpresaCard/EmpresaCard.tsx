@@ -54,7 +54,7 @@ const EmpresaCard: React.FC<EmpresaCardProps> = ({ dato }) => {
 						}
 						style={{ width: "14rem", height: "14rem" }}
 					></Card.Img>
-					<div className={style["button-ontainer"]}>
+					<div className={style["button-container"]}>
 						{/* Boton Ver */}
 						<Button
 							onClick={handleOpenViewModal}

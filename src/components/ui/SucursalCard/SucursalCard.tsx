@@ -52,13 +52,13 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 						{conversorTiempo(sucursal.horarioCierre)} <br />
 					</Card.Text>
 					<Card.Img
-						style={{ maxHeight: "15rem", maxWidth: "15rem" }}
-						variant="top"
 						src={
-							sucursal.logo ||
-							"https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
+							sucursal.logo
+								? sucursal.logo
+								: "https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
 						}
-					/>
+						style={{ width: "14rem", height: "14rem" }}
+					></Card.Img>
 					<div className={styles["buttons"]}>
 						{/* botón de administración */}
 						<Button
