@@ -1,70 +1,89 @@
-import { ChangeEvent, FC, useState } from "react";
-import { IAlergenos } from "../../../../types/dtos/alergenos/IAlergenos";
-import { Button, Form, Modal } from "react-bootstrap";
-import styles from "./ModalEditarAlergeno.module.css"
-import { IUpdateAlergeno } from "../../../../types/dtos/alergenos/IUpdateAlergeno";
-import { BASE_URL_ALERGENOS } from "../../../../services/alergenoService";
-import Swal from "sweetalert2";
+import React, { FC, useEffect, useState } from 'react';
+import { Button, Modal, Form } from 'react-bootstrap';
+import Swal from 'sweetalert2';
+import styles from './ModalEditarAlergeno.module.css';
+import { IUpdateAlergeno } from '../../../../types/dtos/alergenos/IUpdateAlergeno'; 
+import { alergenoService } from '../../../../services/alergenoService';
+
 interface IModalEditarAlergenoProps {
-	show: boolean;
-	onHide: () => void;
-	alergeno: IAlergenos;
+  show: boolean;
+  onHide: () => void;
+  alergeno: IUpdateAlergeno | null; 
 }
 
-
-const ModalEditarAlergeno: FC<IModalEditarAlergenoProps> = ({show, onHide, alergeno }) => {
-
-  
+const ModalEditarAlergeno: FC<IModalEditarAlergenoProps> = ({ show, onHide, alergeno }) => {
   const [formData, setFormData] = useState<IUpdateAlergeno>({
-		denominacion: alergeno.denominacion,
-    imagen: alergeno.imagen,
-    id: alergeno.id
-	});
+    id: 0,                
+    denominacion: '',
+    imagen: {
+      name: '',
+      url: '',
+    },
+  });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: name === "imagen" ? { url: value } : value
-    }));
-  };
-  
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const enviar = JSON.stringify(formData);
-    try {
-      const response = await fetch(`${BASE_URL_ALERGENOS}/${alergeno.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
+  useEffect(() => {
+    if (alergeno) {
+      setFormData(alergeno); 
+    }
+  }, [alergeno]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, files } = e.target;
+
+    if (name === 'imagen' && files && files[0]) {
+      const file = files[0];
+      const imageUrl = URL.createObjectURL(file);
+
+      setFormData((prev) => ({
+        ...prev,
+        imagen: {
+          name: file.name,
+          url: imageUrl,
         },
-        body: enviar
-      });
-
-      if (response.ok) {
-        
-        Swal.fire({
-          icon: "success",
-          title: "Se actualizó correctamente",
-          showConfirmButton: false,
-          timer: 2000
-        });
-        onHide();
-        window.location.reload();
-      } else {
-        console.error("No se pudo actualizar");
-      }
-    } catch (e) {
-      console.error(e);
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    try {
+      if (alergeno?.id) {
+        // Actualizar el alérgeno usando el ID
+        await alergenoService.updateAlergeno(alergeno.id, formData); 
+        Swal.fire({
+          icon: 'success',
+          title: 'Alérgeno actualizado correctamente',
+          showCancelButton: false,
+          timer: 500,
+        });
+
+        onHide();
+        window.location.reload();
+      } else {
+        throw new Error('ID de alérgeno no disponible');
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo actualizar el alérgeno',
+      });
+      onHide();
+    }
+  };
 
   return (
-    <div className={styles["div-main"]}>
-      <Modal show={show} onHide={onHide} className={styles["modal"]} backdrop="static">
+    <div className={styles['div-main']}>
+      <Modal show={show} onHide={onHide} className={styles['modal']} backdrop="static">
         <Modal.Header closeButton>
-          <Modal.Title>Editar Alergeno</Modal.Title>
+          <Modal.Title>Editar Alérgeno</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -78,8 +97,15 @@ const ModalEditarAlergeno: FC<IModalEditarAlergenoProps> = ({show, onHide, alerg
               />
             </Form.Group>
             <Form.Group controlId="imagen" className={styles.imageUpload}>
-              <Form.Label className={styles.imageLabel}>Elige una imagen</Form.Label>
+              <Form.Label className={styles.imageLabel}>Cambiar Imagen</Form.Label>
               <Form.Control type="file" name="imagen" onChange={handleChange} />
+              {formData.imagen.url && (
+                <img
+                  src={formData.imagen.url}
+                  alt="Vista previa"
+                  className={styles.imagePreview}
+                />
+              )}
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -93,7 +119,7 @@ const ModalEditarAlergeno: FC<IModalEditarAlergenoProps> = ({show, onHide, alerg
         </Modal.Footer>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default ModalEditarAlergeno
+export default ModalEditarAlergeno;
