@@ -36,7 +36,9 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 	return (
 		<div className={styles["div-card"]}>
 			<Card className={styles["card-main"]}>
-				<Card.Header style={{ overflow: "auto" }}>
+				<Card.Header
+					style={{ overflow: "auto", backgroundColor: "#567C8D", color: "#fff" }}
+				>
 					<Card.Title
 						className="d-flex justify-content-center text-center"
 						style={{ overflowWrap: "anywhere" }}

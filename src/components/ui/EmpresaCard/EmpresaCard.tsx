@@ -35,7 +35,9 @@ const EmpresaCard: React.FC<EmpresaCardProps> = ({ dato }) => {
 				className={style["card-container"]}
 				onClick={handleSelectEmpresa}
 			>
-				<Card.Header style={{ overflow: "auto" }}>
+				<Card.Header
+					style={{ overflow: "auto", backgroundColor: "#567C8D", color: "#fff" }}
+				>
 					<Card.Title
 						className="d-flex justify-content-center text-center"
 						style={{ overflowWrap: "anywhere" }}

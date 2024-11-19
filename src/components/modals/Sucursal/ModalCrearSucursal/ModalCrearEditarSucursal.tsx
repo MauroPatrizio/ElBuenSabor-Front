@@ -255,8 +255,13 @@ const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
 			centered
 			backdrop="static"
 		>
-			<Modal.Header closeButton>
-				<Modal.Title>Crear Sucursal</Modal.Title>
+			<Modal.Header
+				closeButton
+				style={{ display: "flex", backgroundColor: "#567C8D", color: "#fff" }}
+			>
+				<Modal.Title style={{ width: "100%", textAlign: "center" }}>
+					<b>{sucursal ? "EDITAR SUCURSAL" : "CREAR SUCURSAL"}</b>
+				</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Form>
@@ -549,7 +554,7 @@ const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
 			</Modal.Body>
 			<Modal.Footer>
 				<Button
-					variant="outline-warning"
+					variant="danger"
 					onClick={handleClose}
 				>
 					CANCELAR
@@ -557,7 +562,7 @@ const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
 				<Button
 					type="button"
 					onClick={handleSubmit}
-					variant="outline-success"
+					variant="success"
 				>
 					Enviar
 				</Button>

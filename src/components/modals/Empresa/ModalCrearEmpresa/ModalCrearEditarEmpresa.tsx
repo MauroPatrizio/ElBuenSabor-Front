@@ -112,8 +112,17 @@ export const ModalCrearEditarEmpresa: FC<IModalCrearEditarEmpresaProps> = ({
 				backdrop="static"
 				centered
 			>
-				<Modal.Header closeButton>
-					<Modal.Title>{empresa ? "Editar empresa" : "Agregar Empresa"}</Modal.Title>
+				<Modal.Header
+					closeButton
+					style={{
+						display: "flex",
+						backgroundColor: "#567C8D",
+						color: "#fff",
+					}}
+				>
+					<Modal.Title style={{ width: "100%", textAlign: "center" }}>
+						{empresa ? "EDITAR EMPRESA" : "AGREGAR EMPRESA"}
+					</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<Form>
@@ -185,13 +194,13 @@ export const ModalCrearEditarEmpresa: FC<IModalCrearEditarEmpresaProps> = ({
 				</Modal.Body>
 				<Modal.Footer>
 					<Button
-						variant="outline-warning"
+						variant="danger"
 						onClick={onHide}
 					>
 						Cancelar
 					</Button>
 					<Button
-						variant="outline-success"
+						variant="success"
 						onClick={handleSubmit}
 					>
 						Guardar
