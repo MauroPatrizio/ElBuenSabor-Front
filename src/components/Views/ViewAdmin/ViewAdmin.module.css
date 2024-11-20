@@ -3,8 +3,8 @@ body {
     font-family: Arial, sans-serif;
 }
 .principalContainerAdmin{
-    width: 100%;
-    height: 100vh;
+   background-color: #f5efeb;
+   min-height: 100vh;
 }
 .adminContainer {
     display: flex;
@@ -73,4 +73,7 @@ body {
 
 .table th, .table td {
     border: 1px solid 
+}
+.nav-link .active {
+	background-color: blue;
 }

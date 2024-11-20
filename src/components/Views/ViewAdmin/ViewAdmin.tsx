@@ -59,13 +59,15 @@ const ViewAdmin: React.FC = () => {
   return (
     <div className={style.principalContainerAdmin}>
       <header>
-        <Navbar className={style.NavHeader}>
+        <Navbar  style={{ backgroundColor: "#567C8D" }} expand="lg"
+					className="mb-3">
           <Container>
             <button className={style.backButton} onClick={handleHomeRedirect}>
               <span className="material-symbols-outlined">arrow_back</span>
             </button>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
+            <Navbar.Collapse id="basic-navbar-nav"
+							className="justify-content-center">
               <Navbar.Text>
                 <h3>{branchName ? `Admin - ${branchName}` : 'Admin'}</h3>
               </Navbar.Text>
@@ -76,22 +78,24 @@ const ViewAdmin: React.FC = () => {
 
       <div className={style.adminContainer}>
         <div className={style.adminMenu}>
-          {/* Botones para cambiar de pestaña */}
           <button
             onClick={() => handleTabChange("Categorias")}
             className={`${style.menuButton} ${activeTab === "Categorias" ? style.active : ""}`}
+            style={{ backgroundColor: "lightgray", fontWeight: "bold" }}
           >
             Categorias
           </button>
           <button
             onClick={() => handleTabChange("Productos")}
             className={`${style.menuButton} ${activeTab === "Productos" ? style.active : ""}`}
+            style={{ backgroundColor: "lightgray", fontWeight: "bold" }}
           >
             Productos
           </button>
           <button
             onClick={() => handleTabChange("Alergenos")}
             className={`${style.menuButton} ${activeTab === "Alergenos" ? style.active : ""}`}
+            style={{ backgroundColor: "lightgray", fontWeight: "bold" }}
           >
             Alergenos
           </button>
