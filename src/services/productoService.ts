@@ -1,6 +1,7 @@
 import axios from "axios";
 import { IProductos } from "../types/dtos/productos/IProductos";
 import { ICreateProducto } from "../types/dtos/productos/ICreateProducto";
+import { IUpdateProducto } from "../types/dtos/productos/IUpdateProducto";
 
 export const BASE_URL_PRODUCTOS = "http://190.221.207.224:8090/articulos";
 
@@ -20,15 +21,13 @@ export const productoService = {
         return response.data
     },
 
-    async updateProduct (id: number, editedProducto: IProductos): Promise<IProductos>{
+    async updateProduct (id: number, editedProducto: IUpdateProducto): Promise<IProductos>{
         const response = await axios.put<IProductos>(`${BASE_URL_PRODUCTOS}/${id}`, editedProducto)
         return response.data
     },
-    async deleteProduct(id: number, deleteProduct: IProductos): Promise<IProductos>{
-        const response = await axios.delete<IProductos>(`${BASE_URL_PRODUCTOS}/${id}`,{
-            data: deleteProduct
-        });
-        return response.data
+    
+    async deleteProduct(id: number): Promise<void> {
+        await axios.delete(`${BASE_URL_PRODUCTOS}/${id}`);
     }
 
 }
