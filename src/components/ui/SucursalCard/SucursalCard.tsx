@@ -8,9 +8,10 @@ import ModalCrearEditarSucursal from "../../modals/Sucursal/ModalCrearSucursal/M
 
 interface SucursalCardProps {
 	sucursal: ISucursal;
+	onSuccess: () => void;
 }
 
-const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
+const SucursalCard: FC<SucursalCardProps> = ({ sucursal, onSuccess }) => {
 	const [viewOpen, setViewOpen] = useState(false);
 	const [editOpen, setEditOpen] = useState(false);
 	const navigate = useNavigate(); // Hook para navegación
@@ -90,6 +91,9 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 				onHide={handleEditClose}
 				sucursal={sucursal}
 				idEmpresa={sucursal.empresa.id}
+				onSuccess={() => {
+					onSuccess();
+				}}
 			/>
 
 			{/* Modal View */}

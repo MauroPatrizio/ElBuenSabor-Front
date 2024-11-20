@@ -1,10 +1,13 @@
+//ViewSucursales
 import { RootState } from "../../../redux/store/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from "./ViewSucursales.module.css";
 import { Button } from "react-bootstrap";
 import ModalCrearEditarSucursal from "../../modals/Sucursal/ModalCrearSucursal/ModalCrearEditarSucursal";
 import { SucursalList } from "../../listas/SucursalList/SucursalList";
+import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
+import { sucursalService } from "../../../services/sucursalService";
 
 export const ViewSucursales = () => {
 	const selectedEmpresa = useSelector((state: RootState) => state.empresa.selectedEmpresa);
@@ -14,6 +17,24 @@ export const ViewSucursales = () => {
 	const handleOpen = () => setOpenCrearSucursal(true);
 	const handleClose = () => setOpenCrearSucursal(false);
 
+	const [sucursales, setSucursales] = useState<ISucursal[]>([]);
+
+	const idEmpresa = selectedEmpresa?.id ?? 0;
+
+	const loadSucursales = async () => {
+		try {
+			const sucursalesData = await sucursalService.getAllSucursales(idEmpresa);
+			setSucursales(sucursalesData);
+		} catch (e) {
+			console.error("Error al cargar las sucursales", e);
+		}
+	};
+
+	useEffect(() => {
+		if (idEmpresa) {
+			loadSucursales();
+		}
+	}, [idEmpresa]);
 	return (
 		<div className={styles["div-main"]}>
 			<div className={styles["div-title"]}>
@@ -36,7 +57,10 @@ export const ViewSucursales = () => {
 				</div>
 			</div>
 
-			<SucursalList />
+			<SucursalList
+				sucursales={sucursales}
+				onSuccess={loadSucursales}
+			/>
 
 			{openCrearSucursal && (
 				<>
@@ -44,6 +68,7 @@ export const ViewSucursales = () => {
 						show={openCrearSucursal}
 						onHide={handleClose}
 						idEmpresa={selectedEmpresa?.id ?? 0}
+						onSuccess={loadSucursales}
 					/>
 				</>
 			)}

@@ -1,45 +1,28 @@
-import { useEffect, useState } from "react";
+//Lista de sucursales
 import SucursalCard from "../../ui/SucursalCard/SucursalCard";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import styles from "./SucursalList.module.css";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
-import { sucursalService } from "../../../services/sucursalService";
+import { FC } from "react";
 
-export const SucursalList = () => {
-	const selectedEmpresa = useSelector((state: RootState) => state.empresa.selectedEmpresa);
+interface ISucursalListProps {
+	sucursales: ISucursal[];
+	onSuccess: () => void;
+}
 
-	const idEmpresa = selectedEmpresa?.id;
-
-	const [sucursales, setSucursales] = useState<ISucursal[]>([]);
-
-	useEffect(() => {
-		if (idEmpresa) {
-			sucursalService.getAllSucursales(idEmpresa).then((data: ISucursal[]) => {
-				setSucursales(data);
-			});
-		}
-	}, [idEmpresa]);
-
+export const SucursalList: FC<ISucursalListProps> = ({ sucursales, onSuccess }) => {
 	return (
 		<div className={styles["div-main"]}>
 			<div className={styles["div-lista"]}>
-				{selectedEmpresa ? (
-					sucursales.length > 0 ? (
-						sucursales.map(
-							(sucursal) => (
-								<SucursalCard
-									key={sucursal.id}
-									sucursal={sucursal}
-								/>
-							),
-							console.log(sucursales)
-						)
-					) : (
-						<h3>{`La empresa ${selectedEmpresa?.nombre} no tiene sucursales en este momento`}</h3>
-					)
+				{sucursales.length > 0 ? (
+					sucursales.map((sucursal: ISucursal) => (
+						<SucursalCard
+							key={sucursal.id}
+							sucursal={sucursal}
+							onSuccess={onSuccess}
+						/>
+					))
 				) : (
-					<h3>Seleccione una empresa para ver sus sucursales</h3>
+					<h3>No hay sucursales disponibles</h3>
 				)}
 			</div>
 		</div>

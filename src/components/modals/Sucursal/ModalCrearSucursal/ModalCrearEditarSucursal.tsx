@@ -1,3 +1,4 @@
+//Modal Crear Editar Sucursal
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { sucursalService } from "../../../../services/sucursalService";
 import Swal from "sweetalert2";
@@ -17,6 +18,7 @@ interface IModalCrearEditarSucursalProps {
 	onHide: () => void;
 	idEmpresa: number;
 	sucursal?: ISucursal;
+	onSuccess: () => void;
 }
 
 const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
@@ -24,6 +26,7 @@ const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
 	onHide,
 	idEmpresa,
 	sucursal,
+	onSuccess,
 }) => {
 	const [formData, setFormData] = useState<ICreateSucursal | IUpdateSucursal>({
 		nombre: sucursal?.nombre || "",
@@ -114,6 +117,7 @@ const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
 		}
 
 		try {
+			//Edit
 			if (sucursal) {
 				await sucursalService.updateSucursal(sucursal.id, formData as IUpdateSucursal);
 
@@ -122,11 +126,11 @@ const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
 					title: "Sucursal Actualizada",
 					showCancelButton: false,
 					timer: 1800,
-					didClose: () => {
-						window.location.reload();
-					},
 				});
+				onHide();
+				onSuccess();
 			} else {
+				//Create
 				await sucursalService.createSucursal(formData);
 
 				Swal.fire({
@@ -134,10 +138,9 @@ const ModalCrearEditarSucursal: FC<IModalCrearEditarSucursalProps> = ({
 					title: "Sucursal Creada",
 					showCancelButton: false,
 					timer: 1000,
-					didClose: () => {
-						window.location.reload();
-					},
 				});
+				onHide();
+				onSuccess();
 			}
 
 			setFormErrors({});
