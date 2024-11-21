@@ -1,13 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import empresaSlice from "../slices/empresaSlice";
 import sucursalSlice from "../slices/sucursalSlice";
-import globalStylesSlice from "../slices/globalStylesSlice";
 
 export const store = configureStore({
 	reducer: {
 		empresa: empresaSlice,
 		sucursal: sucursalSlice,
-		estilo: globalStylesSlice,
 	},
 });
 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
-import { EmpresaService } from "../../../services/EmpresaService";
+import { EmpresaService } from "../../../services/empresaService";
 import style from "./ViewEmpresas.module.css";
-import { ModalCrearEmpresa } from "../../modals/Empresa/ModalCrearEmpresa/ModalCrearEmpresa";
+import { ModalCrearEditarEmpresa } from "../../modals/Empresa/ModalCrearEditarEmpresa/ModalCrearEditarEmpresa";
 import { ListaEmpresas } from "../../listas/ListaEmpresas/ListaEmpresas";
 import { Button } from "react-bootstrap";
 
@@ -29,10 +29,13 @@ export const ViewEmpresas = () => {
 	return (
 		<div>
 			<div className={style.containerEmpresa}>
-				<h3>Empresa</h3>
+				<h3 style={{ color: "#2F4156" }}>
+					<b>EMPRESAS</b>
+				</h3>
 				<Button
 					variant="primary"
 					onClick={handleOpenPopUp}
+					style={{ backgroundColor: "#567C8D", borderColor: "#567C8D" }}
 				>
 					Agregar empresa
 				</Button>
@@ -42,7 +45,7 @@ export const ViewEmpresas = () => {
 			</div>
 			{mostrarPopUp && (
 				<>
-					<ModalCrearEmpresa
+					<ModalCrearEditarEmpresa
 						show={mostrarPopUp}
 						onHide={handleClosePopUp}
 					/>

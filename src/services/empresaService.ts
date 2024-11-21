@@ -1,6 +1,7 @@
 import axios from "axios";
 import { IEmpresa } from "../types/dtos/empresa/IEmpresa";
 import { ICreateEmpresaDto } from "../types/dtos/empresa/ICreateEmpresaDto";
+import { IUpdateEmpresaDto } from "../types/dtos/empresa/IUpdateEmpresaDto";
 
 export const BASE_URL_EMPRESAS = "http://190.221.207.224:8090/empresas";
 
@@ -20,7 +21,7 @@ export const EmpresaService = {
 		return response.data;
 	},
 
-	async updateEmpresa(id: number, editedEmpresa: IEmpresa): Promise<IEmpresa> {
+	async updateEmpresa(id: number, editedEmpresa: IUpdateEmpresaDto): Promise<IEmpresa> {
 		const response = await axios.put<IEmpresa>(`${BASE_URL_EMPRESAS}/${id}`, editedEmpresa);
 		return response.data;
 	},

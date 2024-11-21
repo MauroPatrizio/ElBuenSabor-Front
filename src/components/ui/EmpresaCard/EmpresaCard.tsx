@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setSelectedEmpresa } from "../../../redux/slices/empresaSlice";
 import { ModalVerEmpresa } from "../../modals/Empresa/ModalVerEmpresa/ModalVerEmpresa";
-import { ModalEditarEmpresa } from "../../modals/Empresa/ModalEditarEmpresa/ModalEditarEmpresa";
+import { ModalCrearEditarEmpresa } from "../../modals/Empresa/ModalCrearEditarEmpresa/ModalCrearEditarEmpresa";
 
 interface EmpresaCardProps {
 	dato: IEmpresa;
@@ -35,17 +35,26 @@ const EmpresaCard: React.FC<EmpresaCardProps> = ({ dato }) => {
 				className={style["card-container"]}
 				onClick={handleSelectEmpresa}
 			>
-				<Card.Header>
-					<Card.Title className="d-flex justify-content-center text-center">
-						{dato.nombre}
+				<Card.Header
+					style={{ overflow: "auto", backgroundColor: "#567C8D", color: "#fff" }}
+				>
+					<Card.Title
+						className="d-flex justify-content-center text-center"
+						style={{ overflowWrap: "anywhere" }}
+					>
+						{dato.nombre.toUpperCase()}
 					</Card.Title>
 				</Card.Header>
 				<Card.Body className={style["card-body"]}>
 					<Card.Img
-						src={dato.logo ? dato.logo : ""}
-						style={{ maxWidth: "14.9rem", maxHeight: "14.5rem" }}
+						src={
+							dato.logo
+								? dato.logo
+								: "https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
+						}
+						style={{ width: "14rem", height: "14rem" }}
 					></Card.Img>
-					<div className={style["button-ontainer"]}>
+					<div className={style["button-container"]}>
 						{/* Boton Ver */}
 						<Button
 							onClick={handleOpenViewModal}
@@ -77,7 +86,7 @@ const EmpresaCard: React.FC<EmpresaCardProps> = ({ dato }) => {
 			{/* Modal Editar */}
 			{openEditModal && (
 				<div>
-					<ModalEditarEmpresa
+					<ModalCrearEditarEmpresa
 						empresa={dato}
 						show={openEditModal}
 						onHide={handleCloseEditModal}

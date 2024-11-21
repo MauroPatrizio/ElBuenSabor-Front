@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom"; // Importa el hook useNavigate
 import styles from "./SucursalCard.module.css";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import { ModalVerSucursal } from "../../modals/Sucursal/ModalVerSucursal/ModalVerSucursal";
-import ModalEditarSucursal from "../../modals/Sucursal/ModalEditarSucursal/ModalEditarSucursal";
+import ModalCrearEditarSucursal from "../../modals/Sucursal/ModalCrearSucursal/ModalCrearEditarSucursal";
 
 interface SucursalCardProps {
 	sucursal: ISucursal;
+	onSuccess: () => void;
 }
 
-const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
+const SucursalCard: FC<SucursalCardProps> = ({ sucursal, onSuccess }) => {
 	const [viewOpen, setViewOpen] = useState(false);
 	const [editOpen, setEditOpen] = useState(false);
 	const navigate = useNavigate(); // Hook para navegación
@@ -26,19 +27,39 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 		navigate("/admin", { state: { branchName: nombre } }); // Ajusta la ruta si necesitas parámetros adicionales y envia el nombre de la sucursal
 	};
 
+	function conversorTiempo(time: string): string {
+		if (time) {
+			return time.slice(0, 5);
+		}
+		return "";
+	}
+
 	return (
 		<div className={styles["div-card"]}>
 			<Card className={styles["card-main"]}>
+				<Card.Header
+					style={{ overflow: "auto", backgroundColor: "#567C8D", color: "#fff" }}
+				>
+					<Card.Title
+						className="d-flex justify-content-center text-center"
+						style={{ overflowWrap: "anywhere" }}
+					>
+						{sucursal.nombre.toUpperCase()}
+					</Card.Title>
+				</Card.Header>
 				<Card.Body className={styles["card-body"]}>
-					<Card.Title>{sucursal.nombre}</Card.Title>
 					<Card.Text>
-						Apertura: {sucursal.horarioApertura} - {sucursal.horarioCierre} <br />
+						Horario: {conversorTiempo(sucursal.horarioApertura)} {" - "}
+						{conversorTiempo(sucursal.horarioCierre)} <br />
 					</Card.Text>
 					<Card.Img
-						style={{ maxHeight: "15rem", maxWidth: "14.9rem" }}
-						variant="top"
-						src={sucursal.logo || ""}
-					/>
+						src={
+							sucursal.logo
+								? sucursal.logo
+								: "https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
+						}
+						style={{ width: "14rem", height: "14rem" }}
+					></Card.Img>
 					<div className={styles["buttons"]}>
 						{/* botón de administración */}
 						<Button
@@ -65,10 +86,14 @@ const SucursalCard: FC<SucursalCardProps> = ({ sucursal }) => {
 				</Card.Body>
 			</Card>
 			{/* Modal Edit */}
-			<ModalEditarSucursal
+			<ModalCrearEditarSucursal
 				show={editOpen}
 				onHide={handleEditClose}
 				sucursal={sucursal}
+				idEmpresa={sucursal.empresa.id}
+				onSuccess={() => {
+					onSuccess();
+				}}
 			/>
 
 			{/* Modal View */}

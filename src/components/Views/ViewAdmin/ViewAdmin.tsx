@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Navbar } from "react-bootstrap";
+import { Container, Navbar, Button, Tab, Tabs } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import style from "./ViewAdmin.module.css";
 import CategorieList from "../../listas/ListCategories/CategorieList";
 import ProductList from "../../listas/ListProducts/ProductList";
 import AlergenosList from "../../listas/ListAlergenos/AlergenosList";
@@ -13,103 +12,110 @@ import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
 import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
 
 const ViewAdmin: React.FC = () => {
-  const [productos, setProductos] = useState<IProductos[]>([]);
-  const [categorias, setCategorias] = useState<ICategorias[]>([]);
-  const [alergenos, setAlergenos] = useState<IAlergenos[]>([]);
-  const [activeTab, setActiveTab] = useState<"Categorias" | "Productos" | "Alergenos">("Categorias");
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { branchName } = location.state || [];
+	const [productos, setProductos] = useState<IProductos[]>([]);
+	const [categorias, setCategorias] = useState<ICategorias[]>([]);
+	const [alergenos, setAlergenos] = useState<IAlergenos[]>([]);
+	const [activeTab, setActiveTab] = useState<"Categorias" | "Productos" | "Alergenos">(
+		"Categorias"
+	);
+	const navigate = useNavigate();
+	const location = useLocation();
+	const { branchName } = location.state || [];
 
-  const handleTabChange = (tab: "Categorias" | "Productos" | "Alergenos") => {
-    setActiveTab(tab);
-  };
+	const handleTabChange = (tab: "Categorias" | "Productos" | "Alergenos") => {
+		setActiveTab(tab);
+	};
 
-  const handleHomeRedirect = () => {
-    navigate("/"); //VUELVE AL HOME 
-  };
+	const handleHomeRedirect = () => {
+		navigate("/");
+	};
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        switch (activeTab) {
-          case "Categorias":
-            const categoriaDatos = await categoriaService.getAllCategorias();
-            setCategorias(categoriaDatos);
-            break;
-          case "Productos":
-            const productoDatos = await productoService.getAllProductos();
-            setProductos(productoDatos);
-            break;
-          case "Alergenos":
-            const alergenoDatos = await alergenoService.getAllAlergenos();
-            setAlergenos(alergenoDatos);
-            break;
-          default:
-            break;
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+	useEffect(() => {
+		const fetch = async () => {
+			try {
+				switch (activeTab) {
+					case "Categorias":
+						const categoriaDatos = await categoriaService.getAllCategorias();
+						setCategorias(categoriaDatos);
+						break;
+					case "Productos":
+						const productoDatos = await productoService.getAllProductos();
+						setProductos(productoDatos);
+						break;
+					case "Alergenos":
+						const alergenoDatos = await alergenoService.getAllAlergenos();
+						setAlergenos(alergenoDatos);
+						break;
+					default:
+						break;
+				}
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
 
-    fetch();
-  }, [activeTab]);
+		fetch();
+	}, [activeTab]);
 
-  return (
-    <div className={style.principalContainerAdmin}>
-      <header>
-        <Navbar className={style.NavHeader}>
-          <Container>
-            <button className={style.backButton} onClick={handleHomeRedirect}>
-              <span className="material-symbols-outlined">arrow_back</span>
-            </button>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-              <Navbar.Text>
-                <h3>{branchName ? `Admin - ${branchName}` : 'Admin'}</h3>
-              </Navbar.Text>
-            </Navbar.Collapse>
-          </Container>
-        </Navbar>
-      </header>
+	return (
+		<div style={{ backgroundColor: "#f5efeb", minHeight: "100vh" }}>
+			<header>
+				<Navbar
+					style={{ backgroundColor: "#567C8D" }}
+					expand="lg"
+					className="mb-3"
+				>
+					<Container>
+						<Button
+							variant="outline-light"
+							onClick={handleHomeRedirect}
+						>
+							<span className="material-symbols-outlined">arrow_back</span>
+						</Button>
+						<Navbar.Toggle aria-controls="basic-navbar-nav" />
+						<Navbar.Collapse
+							id="basic-navbar-nav"
+							className="justify-content-center"
+						>
+							<Navbar.Text style={{ color: "#fff", fontWeight: "bold" }}>
+								<h3>{branchName ? `Admin - ${branchName}` : "Admin"}</h3>
+							</Navbar.Text>
+						</Navbar.Collapse>
+					</Container>
+				</Navbar>
+			</header>
 
-      <div className={style.adminContainer}>
-        <div className={style.adminMenu}>
-          {/* Botones para cambiar de pestaña */}
-          <button
-            onClick={() => handleTabChange("Categorias")}
-            className={`${style.menuButton} ${activeTab === "Categorias" ? style.active : ""}`}
-          >
-            Categorias
-          </button>
-          <button
-            onClick={() => handleTabChange("Productos")}
-            className={`${style.menuButton} ${activeTab === "Productos" ? style.active : ""}`}
-          >
-            Productos
-          </button>
-          <button
-            onClick={() => handleTabChange("Alergenos")}
-            className={`${style.menuButton} ${activeTab === "Alergenos" ? style.active : ""}`}
-          >
-            Alergenos
-          </button>
-        </div>
-
-    
-        {/* Contenido de la pestaña activa */}
-        <div className="content-area">
-          <div>
-            {activeTab === "Categorias" && <CategorieList categorias={categorias} />}
-            {activeTab === "Productos" && <ProductList productos={productos} />}
-            {activeTab === "Alergenos" && <AlergenosList alergenos={alergenos} />}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+			<Tabs
+				activeKey={activeTab}
+				onSelect={(k) =>
+					k && handleTabChange(k as "Categorias" | "Productos" | "Alergenos")
+				}
+				id="admin-tabs"
+				className="mb-3"
+				justify
+				style={{ backgroundColor: "lightgray", fontWeight: "bold" }}
+			>
+				<Tab
+					eventKey="Categorias"
+					title="Categorias"
+				>
+					<CategorieList categorias={categorias} />
+				</Tab>
+				<Tab
+					eventKey="Productos"
+					title="Productos"
+				>
+					<ProductList productos={productos} />
+				</Tab>
+				<Tab
+					eventKey="Alergenos"
+					title="Alérgenos"
+				>
+					<AlergenosList alergenos={alergenos} />
+				</Tab>
+			</Tabs>
+		</div>
+	);
 };
 
 export default ViewAdmin;
-

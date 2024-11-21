@@ -1,16 +1,15 @@
-.div-card {
-	width: 18rem;
-	transition: transform 0.3s ease;
-	border: 1px solid black;
-}
-
-.div-card :hover {
-	transform: scale(1.02);
-}
-
 .card-main {
-	width: 100%;
-	height: 100%;
+	width: 16rem;
+	height: 95%;
+	border: 1px solid black;
+	border-radius: 0.4rem;
+	transition: transform 0.3 ease;
+	margin: 1rem;
+	cursor: pointer;
+}
+
+.card-main:hover {
+	transform: scale(1.01);
 }
 
 .card-body {

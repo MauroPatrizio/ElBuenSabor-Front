@@ -1,23 +1,22 @@
-import  { FC, useEffect, useState } from 'react'
-import { IAlergenos } from '../../../types/dtos/alergenos/IAlergenos';
-import { Table } from 'react-bootstrap';
-import ModalCrearAlergeno from '../../modals/Alergeno/ModalCrearAlergeno/ModalCrearAlergeno';
-import ModalEditarAlergeno from '../../modals/Alergeno/ModalEditarAlergeno/ModalEditarAlergeno';
+import { FC, useEffect, useState } from "react";
+import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
+import { Table, Button, Modal } from "react-bootstrap";
+import ModalCrearAlergeno from "../../modals/Alergeno/ModalCrearAlergeno/ModalCrearAlergeno";
+import ModalEditarAlergeno from "../../modals/Alergeno/ModalEditarAlergeno/ModalEditarAlergeno";
 
 interface IListaAlergenosProps {
 	alergenos: IAlergenos[];
 }
 
-const AlergenosList: FC<IListaAlergenosProps> = ({alergenos}) => {
-  const [listaAlergenos, setListaAlergenos] = useState<IAlergenos[]>([]);
-  const [openEditModal, setOpenEditModal] = useState(false);
-  const [selectedAlergenoId, setSelectedAlergenoId] = useState<number | null>(null);
+const AlergenosList: FC<IListaAlergenosProps> = ({ alergenos }) => {
+	const [listaAlergenos, setListaAlergenos] = useState<IAlergenos[]>([]);
+	const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
+	const [openEditModal, setOpenEditModal] = useState(false);
+	const [selectedAlergenoId, setSelectedAlergenoId] = useState<number | null>(null);
 
 	useEffect(() => {
 		setListaAlergenos(alergenos);
 	}, [alergenos]);
-
-    const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
 
 	const handleOpenPopUp = () => {
 		setMostrarPopUp(true);
@@ -27,75 +26,97 @@ const AlergenosList: FC<IListaAlergenosProps> = ({alergenos}) => {
 		setMostrarPopUp(false);
 	};
 
-    //handle Edit
-    const selectedAlergeno = alergenos.find((alergeno) => alergeno.id === selectedAlergenoId);
-    const handleEditClick = (id: number) => {
-        console.log(id)
-        setSelectedAlergenoId(id);
-        setMostrarPopUp(true);
-      };
-    
-      const handleCloseModal = () => {
-        setMostrarPopUp(false);
-        setSelectedAlergenoId(null); // Limpiar el id seleccionado al cerrar el modal
-      };
+	// Handle Edit
+	const selectedAlergeno = alergenos.find((alergeno) => alergeno.id === selectedAlergenoId);
+	const handleEditClick = (id: number) => {
+		setSelectedAlergenoId(id);
+		setOpenEditModal(true);
+	};
 
-  return (
-    <div>
-        <h3>ALERGENOS</h3>
-        <button onClick={handleOpenPopUp}>Agregar alergeno</button>
-      <div>
-    
-      {listaAlergenos.length > 0 ? (
-    <div>
-        <Table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Nombre</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {listaAlergenos.map((alergeno, index) => (
-                    <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{alergeno.denominacion}</td>
-                        <td>
-                            <button onClick={()=>handleEditClick(alergeno.id)}>editar</button>
-                            <button>eliminar</button>
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </Table>
-    </div>
-) : (
-    <div>No hay alergenos creados</div>
-)}
-       
-      </div>
-      {mostrarPopUp && (
-        <>
-            <ModalCrearAlergeno
-                show={mostrarPopUp}
-                onHide={handleClosePopUp}
-            />
-        </>
-    )}
+	const handleCloseEditModal = () => {
+		setOpenEditModal(false);
+		setSelectedAlergenoId(null); // Clear the selected allergen ID when closing the modal
+	};
 
-    {/* Modal Editar */}
-			{openEditModal && (
-				selectedAlergeno && (
-                    <ModalEditarAlergeno
-                      show={mostrarPopUp}
-                      onHide={handleCloseModal}
-                      alergeno={selectedAlergeno}
-                    />
-                  )
+	return (
+		<div>
+			<h3 className="text-center">ALERGENOS</h3>
+			<div className="d-flex justify-content-center mb-3">
+				<Button
+					variant="primary"
+					onClick={handleOpenPopUp}
+				>
+					<b>Agregar Alergeno</b>
+				</Button>
+			</div>
+
+			<div>
+				{listaAlergenos.length > 0 ? (
+					<Table
+						striped
+						bordered
+						hover
+					>
+						<thead>
+							<tr>
+								<th style={{ textAlign: "center", width: "5%" }}>#</th>
+								<th style={{ textAlign: "center", width: "75%" }}>Nombre</th>
+								<th style={{ textAlign: "center", width: "20%" }}>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							{listaAlergenos.map((alergeno, index) => (
+								<tr key={index}>
+									<td style={{ textAlign: "center" }}>{index + 1}</td>
+									<td style={{ textAlign: "center" }}>{alergeno.denominacion}</td>
+									<td style={{ display: "flex", justifyContent: "space-evenly" }}>
+										<Button
+											variant="warning"
+											onClick={() => handleEditClick(alergeno.id)}
+										>
+											<span className="material-symbols-outlined">edit</span>
+										</Button>
+										<Button variant="danger">
+											<span className="material-symbols-outlined">
+												delete
+											</span>
+										</Button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</Table>
+				) : (
+					<div>No hay alergenos creados</div>
+				)}
+			</div>
+
+			{/* Modal Crear */}
+			<Modal
+				show={mostrarPopUp}
+				onHide={handleClosePopUp}
+			>
+				<Modal.Header closeButton>
+					<Modal.Title>Crear Alergeno</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<ModalCrearAlergeno
+						show={mostrarPopUp}
+						onHide={handleClosePopUp}
+					/>
+				</Modal.Body>
+			</Modal>
+
+			{/* Modal Editar */}
+			{openEditModal && selectedAlergeno && (
+				<ModalEditarAlergeno
+					show={openEditModal}
+					onHide={handleCloseEditModal}
+					alergeno={selectedAlergeno}
+				/>
 			)}
-    </div>
-  )
-}
+		</div>
+	);
+};
 
-export default AlergenosList
+export default AlergenosList;

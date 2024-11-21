@@ -1,21 +1,20 @@
-import  { FC, useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import { FC, useEffect, useState } from "react";
+import { Table, Button, Modal } from "react-bootstrap";
 import { IProductos } from "../../../types/dtos/productos/IProductos";
 import ModalCrearProducto from "../../modals/Producto/ModalCrearProducto/ModalCrearProducto";
-
 
 interface IListaProductsProps {
 	productos: IProductos[];
 }
 
-const ProductList: FC<IListaProductsProps> = ({productos}) => {
-
-    const [listaProductos, setListaProductos] = useState<IProductos[]>([]);
+const ProductList: FC<IListaProductsProps> = ({ productos }) => {
+	const [listaProductos, setListaProductos] = useState<IProductos[]>([]);
 
 	useEffect(() => {
 		setListaProductos(productos);
 	}, [productos]);
-    const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
+
+	const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
 
 	const handleOpenPopUp = () => {
 		setMostrarPopUp(true);
@@ -25,55 +24,79 @@ const ProductList: FC<IListaProductsProps> = ({productos}) => {
 		setMostrarPopUp(false);
 	};
 
-  return (
-    <div>
-        <h3>PRODUCTOS</h3>
-        <button onClick={handleOpenPopUp}>Agregar Producto</button>
-      <div>
-    
-      {listaProductos.length > 0 ? (
-    <div>
-        <Table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Precio</th>
-                    <th>Descripción</th>
-                    <th>Habilitado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {listaProductos.map((producto, index) => (
-                    <tr key={index}>
-                        <td>{index + 1}</td> {/* Número de fila */}
-                        <td>{producto.precioVenta}</td>
-                        <td>{producto.descripcion}</td>
-                        <td>{producto.habilitado ? "Sí" : "No"}</td>
-                        <td>
-                            <button>editar</button>
-                            <button>eliminar</button>
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </Table>
-    </div>
-) : (
-    <div>No hay productos creados</div>
-)}
-       
-      </div>
-      {mostrarPopUp && (
-        <>
-            <ModalCrearProducto
-                show={mostrarPopUp}
-                onHide={handleClosePopUp}
-            />
-        </>
-    )}
-    </div>
-  );
+	return (
+		<div>
+			<h3 className="text-center">PRODUCTOS</h3>
+			<div className="d-flex justify-content-center mb-3">
+				<Button
+					variant="primary"
+					onClick={handleOpenPopUp}
+				>
+					Agregar Producto
+				</Button>
+			</div>
+
+			<div>
+				{listaProductos.length > 0 ? (
+					<Table
+						striped
+						bordered
+						hover
+					>
+						<thead>
+							<tr>
+								<th className="text-center">#</th>
+								<th className="text-center">Precio</th>
+								<th className="text-center">Descripción</th>
+								<th className="text-center">Habilitado</th>
+								<th className="text-center">Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							{listaProductos.map((producto, index) => (
+								<tr key={index}>
+									<td className="text-center">{index + 1}</td>{" "}
+									{/* Número de fila */}
+									<td className="text-center">{producto.precioVenta}</td>
+									<td className="text-center">{producto.descripcion}</td>
+									<td className="text-center">
+										{producto.habilitado ? "Sí" : "No"}
+									</td>
+									<td style={{ display: "flex", justifyContent: "space-evenly" }}>
+										<Button variant="warning">
+											<span className="material-symbols-outlined">edit</span>
+										</Button>
+										<Button variant="danger">
+											<span className="material-symbols-outlined">
+												delete
+											</span>
+										</Button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</Table>
+				) : (
+					<div>No hay productos creados</div>
+				)}
+			</div>
+
+			<Modal
+				show={mostrarPopUp}
+				onHide={handleClosePopUp}
+			>
+				<Modal.Header closeButton>
+					<Modal.Title>Crear Producto</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<ModalCrearProducto
+						show={mostrarPopUp}
+						onHide={handleClosePopUp}
+					/>
+				</Modal.Body>
+			</Modal>
+		</div>
+	);
 };
 
 export default ProductList;

@@ -12,8 +12,9 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 1rem;
+	padding: 1.5rem;
 }
 
 .div-lista-empresas {
-	background-color: #e7e6e6;
+	background-color: #ccd9e1;
 }

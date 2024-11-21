@@ -9,7 +9,8 @@
 	height: 100%;
 	align-items: center;
 	justify-items: center;
-	background-color: lightgrey;
+	background-color: #ccd9e1;
+	overflow-y: hidden;
 }
 
 .div-sucursales {
@@ -17,5 +18,6 @@
 	height: 100%;
 	align-items: center;
 	justify-items: center;
-	background-color: whitesmoke;
+	background-color: #f5efeb;
+	overflow-y: hidden;
 }
