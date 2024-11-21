@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setSelectedEmpresa } from "../../../redux/slices/empresaSlice";
 import { ModalVerEmpresa } from "../../modals/Empresa/ModalVerEmpresa/ModalVerEmpresa";
-import { ModalCrearEditarEmpresa } from "../../modals/Empresa/ModalCrearEmpresa/ModalCrearEditarEmpresa";
+import { ModalCrearEditarEmpresa } from "../../modals/Empresa/ModalCrearEditarEmpresa/ModalCrearEditarEmpresa";
 
 interface EmpresaCardProps {
 	dato: IEmpresa;

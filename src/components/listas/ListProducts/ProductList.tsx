@@ -27,13 +27,14 @@ const ProductList: FC<IListaProductsProps> = ({ productos }) => {
 	return (
 		<div>
 			<h3 className="text-center">PRODUCTOS</h3>
-			<Button
-				variant="primary"
-				onClick={handleOpenPopUp}
-				style={{ display: "flex", justifyContent: "center" }}
-			>
-				Agregar Producto
-			</Button>
+			<div className="d-flex justify-content-center mb-3">
+				<Button
+					variant="primary"
+					onClick={handleOpenPopUp}
+				>
+					Agregar Producto
+				</Button>
+			</div>
 
 			<div>
 				{listaProductos.length > 0 ? (
