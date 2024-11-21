@@ -93,25 +93,31 @@ const alergenosList: FC<IListaAlergenosProps> = ({ alergenos }) => {
 							hover
 						>
 							<thead>
-								<tr>
-									<th className="text-center">#</th>
-									<th className="text-center">Precio</th>
-									<th className="text-center">Descripción</th>
-									<th className="text-center">Habilitado</th>
-									<th className="text-center">Acciones</th>
+								<tr style={{ display: "flex", width: "100vw" }}>
+									<th style={{ textAlign: "center", width: "10%" }}>#</th>
+									<th style={{ textAlign: "center", width: "70%" }}>Nombre</th>
+									<th style={{ textAlign: "center", width: "20%" }}>Acciones</th>
 								</tr>
 							</thead>
 							<tbody>
 								{listaAlergenos.map((alergeno, index) => (
-									<tr key={alergeno.id}>
-										<td className="text-center">{index + 1}</td>{" "}
+									<tr
+										key={alergeno.id}
+										style={{ display: "flex", width: "100vw" }}
+									>
+										<td style={{ textAlign: "center", width: "10%" }}>
+											{index + 1}
+										</td>{" "}
 										{/* Número de fila */}
-										<td className="text-center">{alergeno.id}</td>
-										<td className="text-center">{alergeno.denominacion}</td>
+										<td style={{ textAlign: "center", width: "70%" }}>
+											{alergeno.denominacion}
+										</td>
 										<td
 											style={{
 												display: "flex",
 												justifyContent: "space-evenly",
+												textAlign: "center",
+												width: "20%",
 											}}
 										>
 											<Button
