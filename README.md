@@ -8,7 +8,7 @@
 
 ## 📜 Descripción:
 
-Este es el proyecto final para la asignatura de Programación 3, desarrollado para la facultad. Su propósito es gestionar productos en empresas y sus sucursales, permitiendo agregar, editar y eliminar productos.
+Este es el proyecto final para la asignatura de Programación 3, desarrollado para la facultad. Su propósito es gestionar empresas y sus sucursales, permitiendo agregar, editar y eliminar elementos.
 
 ## 🛠️ Tecnologías Utilizadas:
 
@@ -42,4 +42,4 @@ Pasos para ejecutar el proyecto localmente:
 
 ## 🛠️ Funcionalidades:
 
--   Gestión de productos: Agregar, editar y eliminar productos.
+-   Gestión: Agregar, editar y eliminar elementos.
