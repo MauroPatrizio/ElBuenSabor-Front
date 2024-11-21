@@ -1,7 +1,10 @@
 import { FC, useEffect, useState } from "react";
-import { Table, Button, Modal } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { IProductos } from "../../../types/dtos/productos/IProductos";
-import ModalCrearProducto from "../../modals/Producto/ModalCrearProducto/ModalCrearProducto";
+import { ModalCrearProducto } from "../../modals/Producto/ModalCrearProducto/ModalCrearProducto";
+import ModalEditarProducto from "../../modals/Producto/ModalEditarProducto/ModalEditarProducto";
+import { productoService } from "../../../services/productoService";
+import Swal from "sweetalert2";
 
 interface IListaProductsProps {
 	productos: IProductos[];
@@ -9,25 +12,68 @@ interface IListaProductsProps {
 
 const ProductList: FC<IListaProductsProps> = ({ productos }) => {
 	const [listaProductos, setListaProductos] = useState<IProductos[]>([]);
+	const [productoSeleccionado, setProductoSeleccionado] = useState<IProductos | null>(null);
 
 	useEffect(() => {
 		setListaProductos(productos);
 	}, [productos]);
 
 	const [mostrarPopUp, setMostrarPopUp] = useState<boolean>(false);
+	const [modoEdicion, setModoEdicion] = useState<boolean>(false);
 
 	const handleOpenPopUp = () => {
 		setMostrarPopUp(true);
 	};
 
+	const handleOpenPopUpEdicion = (productoSelec: IProductos) => {
+		setProductoSeleccionado(productoSelec);
+		setModoEdicion(true);
+	};
+
 	const handleClosePopUp = () => {
 		setMostrarPopUp(false);
+		setModoEdicion(false);
+		setProductoSeleccionado(null);
+	};
+
+	const handleDelete = async (id: number) => {
+		const result = await Swal.fire({
+			title: "¿Estás seguro?",
+			text: "Esta acción no se puede deshacer.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Sí, eliminar",
+			cancelButtonText: "Cancelar",
+		});
+
+		if (result.isConfirmed) {
+			try {
+				await productoService.deleteProduct(id);
+				Swal.fire({
+					icon: "success",
+					title: "Producto eliminado con éxito",
+					showConfirmButton: false,
+					timer: 1500,
+				});
+				// Actualizar la lista local después de eliminar
+				setListaProductos((prev) => prev.filter((producto) => producto.id !== id));
+			} catch (error) {
+				console.error("Error al eliminar el producto:", error);
+				Swal.fire({
+					icon: "error",
+					title: "Error al eliminar",
+					text: "Intente nuevamente más tarde.",
+				});
+			}
+		}
 	};
 
 	return (
 		<div>
 			<h3 className="text-center">PRODUCTOS</h3>
-			<div className="d-flex justify-content-center mb-3">
+			<div style={{ display: "flex", justifyContent: "center", margin: "1.5rem" }}>
 				<Button
 					variant="primary"
 					onClick={handleOpenPopUp}
@@ -38,63 +84,75 @@ const ProductList: FC<IListaProductsProps> = ({ productos }) => {
 
 			<div>
 				{listaProductos.length > 0 ? (
-					<Table
-						striped
-						bordered
-						hover
-					>
-						<thead>
-							<tr>
-								<th className="text-center">#</th>
-								<th className="text-center">Precio</th>
-								<th className="text-center">Descripción</th>
-								<th className="text-center">Habilitado</th>
-								<th className="text-center">Acciones</th>
-							</tr>
-						</thead>
-						<tbody>
-							{listaProductos.map((producto, index) => (
-								<tr key={index}>
-									<td className="text-center">{index + 1}</td>{" "}
-									{/* Número de fila */}
-									<td className="text-center">{producto.precioVenta}</td>
-									<td className="text-center">{producto.descripcion}</td>
-									<td className="text-center">
-										{producto.habilitado ? "Sí" : "No"}
-									</td>
-									<td style={{ display: "flex", justifyContent: "space-evenly" }}>
-										<Button variant="warning">
-											<span className="material-symbols-outlined">edit</span>
-										</Button>
-										<Button variant="danger">
-											<span className="material-symbols-outlined">
-												delete
-											</span>
-										</Button>
-									</td>
+					<div>
+						<Table
+							striped
+							bordered
+							hover
+						>
+							<thead>
+								<tr>
+									<th className="text-center">#</th>
+									<th className="text-center">Precio</th>
+									<th className="text-center">Descripción</th>
+									<th className="text-center">Habilitado</th>
+									<th className="text-center">Acciones</th>
 								</tr>
-							))}
-						</tbody>
-					</Table>
+							</thead>
+							<tbody>
+								{listaProductos.map((producto, index) => (
+									<tr key={producto.id}>
+										<td className="text-center">{index + 1}</td>{" "}
+										{/* Número de fila */}
+										<td className="text-center">{producto.denominacion}</td>
+										<td className="text-center">{producto.descripcion}</td>
+										<td className="text-center">{producto.precioVenta}</td>
+										<td
+											style={{
+												display: "flex",
+												justifyContent: "space-evenly",
+											}}
+										>
+											<Button
+												variant="warning"
+												onClick={() => handleOpenPopUpEdicion(producto)}
+											>
+												<span className="material-symbols-outlined">
+													edit
+												</span>
+											</Button>
+											<Button
+												variant="danger"
+												onClick={() => handleDelete(producto.id)}
+											>
+												<span className="material-symbols-outlined">
+													delete
+												</span>
+											</Button>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</Table>
+					</div>
 				) : (
 					<div>No hay productos creados</div>
 				)}
 			</div>
 
-			<Modal
-				show={mostrarPopUp}
-				onHide={handleClosePopUp}
-			>
-				<Modal.Header closeButton>
-					<Modal.Title>Crear Producto</Modal.Title>
-				</Modal.Header>
-				<Modal.Body>
-					<ModalCrearProducto
-						show={mostrarPopUp}
-						onHide={handleClosePopUp}
-					/>
-				</Modal.Body>
-			</Modal>
+			{mostrarPopUp && (
+				<ModalCrearProducto
+					show={mostrarPopUp}
+					onHide={handleClosePopUp}
+				/>
+			)}
+			{modoEdicion && productoSeleccionado && (
+				<ModalEditarProducto
+					show={modoEdicion}
+					onHide={handleClosePopUp}
+					producto={productoSeleccionado}
+				/>
+			)}
 		</div>
 	);
 };
