@@ -34,6 +34,7 @@ const ProductList: FC<IListaProductsProps> = ({ productos }) => {
 		setMostrarPopUp(false);
 		setModoEdicion(false);
 		setProductoSeleccionado(null);
+		window.location.reload();
 	};
 
 	const handleDelete = async (id: number) => {
