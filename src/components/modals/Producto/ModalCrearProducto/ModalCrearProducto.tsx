@@ -56,6 +56,7 @@ export const ModalCrearProducto: FC<IModalCrearProductoProps> = ({ show, onHide 
 
 		try {
 			await productoService.createProduct(formData);
+			
 			Swal.fire({
 				icon: "success",
 				title: "Producto agregado correctamente",
@@ -146,6 +147,7 @@ export const ModalCrearProducto: FC<IModalCrearProductoProps> = ({ show, onHide 
 							required
 						>
 							<option value={0}>Seleccionar categoría</option>
+							<option value={1}>MENU</option>
 							{/* Aquí se deberían cargar las categorías disponibles */}
 						</Form.Control>
 					</Form.Group>
