@@ -28,4 +28,14 @@ export const categoriaService = {
 	async deleteCategoria(id: number): Promise<void> {
 		await axios.delete(`${BASE_URL_CATEGORIAS}/${id}`);
 	},
+	
+	async getSubcategoriasByCategoriaId(categoriaId: number): Promise<ICategorias['subCategorias']> {
+		try {
+		  const categoria = await this.getCategoriaByID(categoriaId);
+		  return categoria.subCategorias.filter((subCat) => !subCat.eliminado); // Filtrar eliminadas
+		} catch (error) {
+		  console.error("Error al listar subcategorías:", error);
+		  throw error;
+		}
+	  },
 };

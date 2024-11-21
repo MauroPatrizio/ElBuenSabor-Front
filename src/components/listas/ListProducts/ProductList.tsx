@@ -105,9 +105,9 @@ const ProductList: FC<IListaProductsProps> = ({ productos }) => {
 									<tr key={producto.id}>
 										<td className="text-center">{index + 1}</td>{" "}
 										{/* Número de fila */}
-										<td className="text-center">{producto.denominacion}</td>
-										<td className="text-center">{producto.descripcion}</td>
 										<td className="text-center">{producto.precioVenta}</td>
+										<td className="text-center">{producto.descripcion}</td>
+										<td className="text-center">{producto.denominacion}</td>
 										<td
 											style={{
 												display: "flex",
