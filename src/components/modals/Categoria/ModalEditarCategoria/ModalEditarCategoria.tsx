@@ -3,7 +3,7 @@ import { categoriaService } from "../../../../services/categoriaService";
 import Swal from "sweetalert2";
 import { IUpdateCategoria } from "../../../../types/dtos/categorias/IUpdateCategoria"; 
 import { Modal, Form, Button } from "react-bootstrap";
-import styles from "./ModalCrearCategoria.module.css";
+import styles from "./ModalEditarCategoria.module.css";
 
 interface IModalEditarCategoriaProps {
   show: boolean;

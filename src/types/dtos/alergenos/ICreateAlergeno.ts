@@ -1,7 +1,7 @@
 import { IImagen } from "../../IImagen";
 
 export interface ICreateAlergeno {
-  id?: number;       // id es opcional
+  id?: number;       
   denominacion: string;
   imagen: IImagen | null;
 }
