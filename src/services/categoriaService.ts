@@ -30,9 +30,7 @@ export const categoriaService = {
 	},
 
 	async getSubcategoriasByCategoriaId(categoriaId: number): Promise<ICategorias['subCategorias']> {
-		
 		try {
-
 		  const categoria = await this.getCategoriaByID(categoriaId);
 		  return categoria.subCategorias.filter((subCat) => !subCat.eliminado); // Filtrar eliminadas
 		} catch (error) {
